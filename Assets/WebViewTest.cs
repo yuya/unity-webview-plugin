@@ -1,28 +1,22 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class WebViewTest : MonoBehaviour {
     public string Url;
     WebViewObject webViewObject;
 
-	// Use this for initialization
-	void Start () {
-//        webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();	
-//        Debug.Log (webViewObject);
+    void start() {
         webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
-        webViewObject.Init ();
-//
-//        webViewObject.LoadURL (Url);
-//        webViewObject.SetVisibility (true);
-	}
+        webViewObject.Init();
+    }
 
-//    void OnGUI () {
-//        if (GUI.Button (new Rect(10, 10, 150, 100), "I am a button")) {
-//            Debug.Log ("HOGE");
-//        }
-//    }
-//
-//	// Update is called once per frame
-//	void Update () {
-//	}
+    void OnGUI() {
+        if (GUILayout.Button("OPEN URL", GUILayout.MinWidth(200), GUILayout.MinHeight(100))) {
+            Debug.Log("OPEN URL");
+            webViewObject.LoadURL("http://yahoo.co.jp/");
+        }
+        if (GUILayout.Button("ALERT", GUILayout.MinWidth(200), GUILayout.MinHeight(100))) {
+            Debug.Log("ALERT");
+            webViewObject.Alert();
+        }
+    }
 }
