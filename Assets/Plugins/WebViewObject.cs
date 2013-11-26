@@ -1,28 +1,58 @@
 ﻿using UnityEngine;
-//using System.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Callback = System.Action<string>;
 
 public class WebViewObject : MonoBehaviour {
     Callback callback;
-    
-#if UNITY_IPHONE
     IntPtr webView;
-    public bool visibility;
 
     [DllImport("__Internal")]
-    private static extern IntPtr _WebViewPlugin_Init();
+    private static extern IntPtr webViewPluginInit(string gameObject);
     [DllImport("__Internal")]
-    private static extern void _WebViewPluginSetVisibility(IntPtr instance, bool visibility);
+    private static extern int webViewPluginDestroy(IntPtr instance);
     [DllImport("__Internal")]
-    private static extern void _WebViewPluginLoadURL(IntPtr instance, string url);
+    private static extern void webViewPluginLoadURL(IntPtr instance, string url);
+//    [DllImport("__Internal")]
+//    private static extern void webViewEvaluateJS(IntPtr instance, string str);
+    [DllImport("__Internal")]
+    private static extern void webViewPluginAlert();
+    [DllImport("__Internal")]
+    private static extern void webViewPluginSetVisibility(IntPtr instance, bool visibility);
+    [DllImport("__Internal")]
+    private static extern void webViewPluginSetFrame(IntPtr instance, int x, int y, int width, int height);
+    [DllImport("__Internal")]
+    private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom);
 
-    public void Init() {
-        webView = _WebViewPluginInit();
+    public void Init(Callback cb = null) {
+        callback = cb;
+        webView  = webViewPluginInit(name);
+    }
+
+    void OnDestroy() {
+        if (webView == IntPtr.Zero) {
+            return;
+        }
+
+        webViewPluginDestroy(webView);
+    }
+
+    public void SetCenterPositionWithScale(Vector2 center, Vector2 scale) {
+        if (webView == IntPtr.Zero) {
+            return;
+        }
+
+        webViewPluginSetFrame(webView, (int)center.x, (int)center.y, (int)scale.x, (int)scale.y);
+    }
+
+    public void SetMargins(int left, int top, int right, int bottom) {
+        if (webView == IntPtr.Zero) {
+            return;
+        }
+
+        webViewPluginSetMargins(webView, left, top, right, bottom);
     }
 
     public void SetVisibility(bool value) {
@@ -30,16 +60,26 @@ public class WebViewObject : MonoBehaviour {
             return;
         }
 
-        visibility = value;
-        _WebViewPluginSetVisibility(webView, value);
+        webViewPluginSetVisibility(webView, value);
     }
 
     public void LoadURL(string url) {
-        if (webView == null) {
+        if (webView == IntPtr.Zero) {
             return;
         }
 
-        _WebViewPluginLoadURL(webView, url);
+        webViewPluginLoadURL(webView, url);
     }
-#endif
+
+    public void Alert() {
+        webViewPluginAlert();
+    }
+
+//    public void EvaluteJS(string str) {
+//        if (webView == IntPtr.Zero) {
+//            return;
+//        }
+//
+//        webViewEvaluateJS(webView, str);
+//    }
 }
