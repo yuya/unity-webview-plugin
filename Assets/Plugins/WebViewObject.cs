@@ -3,7 +3,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+
 using Callback = System.Action<string>;
+
+public class WebViewObjectMessage {
+    public string path;
+    public Hashtable args;
+
+    public WebViewObjectMessage(string message) {
+        string[] split = message.Split("?"[0]);
+
+        path = split[0];
+        args = new Hashtable();
+
+        if (split.Length > 1) {
+            foreach (string pair in split[1].Split("&"[0])) {
+                string[] keys = pair.Split("="[0]);
+                args[keys[0]] = WWW.UnEscapeURL(keys[1]);
+            }
+        }
+    }
+}
 
 public class WebViewObject : MonoBehaviour {
     Callback callback;
@@ -25,6 +45,22 @@ public class WebViewObject : MonoBehaviour {
     private static extern void webViewPluginSetFrame(IntPtr instance, int x, int y, int width, int height);
     [DllImport("__Internal")]
     private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom);
+    [DllImport("__Internal")]
+    private static extern void hoge_();
+
+//    private static WebViewObject _instance = null;
+//    public static WebViewObject Instance {
+//        get {
+//            if (_instance == null) {
+//                GameObject gameObject = new GameObject("WebViewObject");
+//                DontDestroyOnLoad(gameObject);
+//
+//                _instance = gameObject.AddComponent<WebViewObject>();
+//            }
+//
+//            return _instance;
+//        }
+//    }
 
     public void Init(Callback cb = null) {
         callback = cb;
@@ -68,11 +104,28 @@ public class WebViewObject : MonoBehaviour {
             return;
         }
 
+        Debug.Log(url);
         webViewPluginLoadURL(webView, url);
+    }
+
+//    public WebViewObjectMessage CallMessage(string message) {
+//        Debug.Log(message);
+//
+//        return (message != null) ? new WebViewObjectMessage(message) : null;
+//    }
+
+    public void CallMessage(string message) {
+        Debug.Log(message);
+
+//        return (message != null) ? new WebViewObjectMessage(message) : null;
     }
 
     public void Alert() {
         webViewPluginAlert();
+    }
+
+    public void hoge() {
+        hoge_();
     }
 
 //    public void EvaluteJS(string str) {

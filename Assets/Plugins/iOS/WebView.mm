@@ -3,7 +3,19 @@
 extern UIViewController *UnityGetGLViewController();
 extern "C" void UnitySendMessage(const char *, const char *, const char *);
 
-NSString *customScheme = @"webviewbridge:";
+//NSString *customScheme     = @"webviewbridge:";
+//NSInteger *customSchemeLen = [customScheme length];
+
+char *MakeStringCopy (const char *string) {
+    if (string == NULL) {
+        return NULL;
+    }
+    
+    char *res = (char *)malloc(strlen(string) + 1);
+    strcpy(res, string);
+    
+    return res;
+}
 
 #pragma mark - Objective-C Implementation
 
@@ -14,7 +26,7 @@ NSString *customScheme = @"webviewbridge:";
 
 @implementation WebViewPlugin
 
-- (id)initWithGameObjectName:(const char *)gameObjectName_ {
+- (id)initWithGameObjectName:(const char *)name {
     self = [super init];
     
     if (self) {
@@ -24,18 +36,20 @@ NSString *customScheme = @"webviewbridge:";
         _webView.hidden   = YES;
         
         [view addSubview:_webView];
-        self.gameObjectName = [NSString stringWithUTF8String:gameObjectName_];
+        
+        _gameObjectName   = [NSString stringWithUTF8String:name];
     }
     
     return self;
 }
 
 - (void)dealloc {
+    NSLog(@"##### DEALLOC #####");
     _webView.delegate = nil;
     [_webView removeFromSuperview];
     
-    _webView = nil;
-    self.gameObjectName = nil;
+    _webView        = nil;
+    _gameObjectName = nil;
     
     [super dealloc];
 }
@@ -43,8 +57,20 @@ NSString *customScheme = @"webviewbridge:";
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *url = [[request URL] absoluteString];
     
-    if ([url hasPrefix:customScheme]) {
+    //    if ([url hasPrefix:customScheme]) {
+    //        NSLog(@"NSURL HAS PREFIX WEBVIEWBRIDGE!!");
+    //        UnitySendMessage([_gameObjectName UTF8String], "BridgeMessage", [[url substringFromIndex:customSchemeLen] UTF8String]);
+    //
+    //        return NO;
+    //    }
+    if ([url hasPrefix:@"webviewbridge:"]) {
         NSLog(@"NSURL HAS PREFIX WEBVIEWBRIDGE!!");
+        //        NSLog(_gameObjectName);
+        //        NSLog([[url substringFromIndex:14] UTF8String]);
+        //        UnitySendMessage("WebViewObject", "BridgeMessage", [self webViewPluginPollMessage:_webView]);
+//        UnitySendMessage("WebViewObject", "BridgeMessage", "MOMONGA IS YUMMY!!");
+        UnitySendMessage("WebViewObject", "CallMessage", [self callMessage]);
+        //        UnitySendMessage([_gameObjectName UTF8String], "BridgeMessage", [[url substringFromIndex:14] UTF8String]);
         
         return NO;
     }
@@ -63,7 +89,7 @@ NSString *customScheme = @"webviewbridge:";
 
 //- (void)evaluateJS:(const char *)str {
 //    NSString *js = [NSString stringWithUTF8String:str];
-//    
+//
 //    [_webView stringByEvaluatingJavaScriptFromString:js];
 //}
 
@@ -84,18 +110,33 @@ NSString *customScheme = @"webviewbridge:";
     _webView.frame = frame;
 }
 
+- (NSString *)stringByEvaluatingJS:(NSString *)str {
+    return [_webView stringByEvaluatingJavaScriptFromString:str];
+}
+
 - (void)setMargins:(int)left top:(int)top right:(int)right bottom:(int)bottom {
     UIView* view  = UnityGetGLViewController().view;
     CGRect frame  = _webView.frame;
     CGRect screen = view.bounds;
     CGFloat scale = 1.0f / view.contentScaleFactor;
-
+    
     frame.size.width  = screen.size.width  - scale * (left + right);
     frame.size.height = screen.size.height - scale * (top + bottom);
     frame.origin.x    = scale * left;
     frame.origin.y    = scale * top;
     
     _webView.frame = frame;
+}
+
+- (char *)callMessage {
+    const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediatorInstance.callMessage()"].UTF8String;
+    
+    if (message) {
+        return MakeStringCopy(message);
+    }
+    else {
+        return NULL;
+    }
 }
 
 @end
@@ -106,31 +147,28 @@ extern "C" {
     void *webViewPluginInit(const char *gameObjectName);
     void webViewPluginDestroy(void *instance);
     void webViewPluginLoadURL(void *instance, const char *url);
-    void webViewPluginAlert();
-//    void webViewEvaluteJS(void *instance, const char *str);
+    //    void webViewEvaluteJS(void *instance, const char *str);
     void webViewPluginSetVisibility(void *instance, BOOL visibility);
     void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height);
     void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom);
+    const char *webViewPluginCallMessage(void *instance);
+    
+    void hoge_();
+    void webViewPluginAlert();
 }
 
-void webViewPluginAlert() {
-    UIAlertView *alert = [[UIAlertView alloc] init];
-    
-    alert.title = @"TITLE_TITLE";
-    alert.message = @"MESSAGE_MESSAGE";
-    [alert addButtonWithTitle:@"OK"];
-    
-    [alert show];
-}
+static WebViewPlugin *webViewInstance;
 
 void *webViewPluginInit(const char *gameObjectName) {
-    id instance = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName];
+    id instance     = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName];
+    webViewInstance = instance;
     
     return (void *)instance;
 }
 
 void webViewPluginDestroy(void *instance) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
+    
     [webViewPlugin release];
 }
 
@@ -142,7 +180,7 @@ void webViewPluginLoadURL(void *instance, const char *url) {
 
 //void webViewEvaluteJS(void *instance, const char *str) {
 //    WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-//    
+//
 //    [webViewPlugin evaluateJS:str];
 //}
 
@@ -153,8 +191,8 @@ void webViewPluginSetVisibility(void *instance, BOOL visibility) {
 }
 
 void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height) {
-    float screenScale = [UIScreen instancesRespondToSelector:@selector(scale)] ? [UIScreen mainScreen].scale : 1.0f;
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
+    float screenScale            = [UIScreen instancesRespondToSelector:@selector(scale)] ? [UIScreen mainScreen].scale : 1.0f;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (screenScale == 2.0) {
@@ -169,4 +207,29 @@ void webViewPluginSetMargins(void *instance, int left, int top, int right, int b
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     
     [webViewPlugin setMargins:left top:top right:right bottom:bottom];
+}
+
+const char *webViewPluginCallMessage(void *instance) {
+    WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
+    
+    return [webViewPlugin callMessage];
+}
+
+void webViewPluginAlert() {
+    UIAlertView *alert = [[UIAlertView alloc] init];
+    
+    alert.title = @"TITLE_TITLE";
+    alert.message = @"MESSAGE_MESSAGE";
+    [alert addButtonWithTitle:@"OK"];
+    
+    [alert show];
+}
+
+void hoge_() {
+    UIAlertView *alert = [[UIAlertView alloc] init];
+    alert.title        = @"お知らせ";
+    alert.message      = @"完了しました";
+    
+    [alert addButtonWithTitle:@"確認"];
+    [alert show];
 }
