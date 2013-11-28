@@ -50,7 +50,7 @@ public class WebViewObject : MonoBehaviour {
 //    public void Init(Callback cb = null) {
     public void Init(string name, string scheme, string caller) {
 //        callback = cb;
-        webView  = webViewPluginInit(name, scheme, caller);
+        webView      = webViewPluginInit(name, scheme, caller);
         callerObject = GameObject.Find(caller);
 
         Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
@@ -65,6 +65,22 @@ public class WebViewObject : MonoBehaviour {
 
         webViewPluginDestroy(webView);
     }
+
+//    private object StringToDictionary(string str) {
+////        Dictionary<string, string> dic = new Dictionary<key, value>();
+//        string[] split = str.Split("?"[0]);
+//        string path    = split[0];
+//        Hashtable args = new Hashtable();
+//
+//        if (split.Length > 1) {
+//            foreach(string pair in split[1].Split("&"[0])) {
+//                string[] keys = pair.Split("="[0]);
+//                args[keys[0]] = WWW.UnEscapeURL(keys[1]);
+//            }
+//        }
+//
+//        return 
+//    }
 
     public void SetCenterPositionWithScale(Vector2 center, Vector2 scale) {
         if (webView == IntPtr.Zero) {
@@ -99,20 +115,17 @@ public class WebViewObject : MonoBehaviour {
     }
 
     public void HandleMessage(string message) {
-        messageQueue.Add(message);
-        callerObject.SendMessage("LogLogCombo", message);
+        callerObject.SendMessage("CallMessage", (message != null) ? new WebViewObjectMessage(message) : null);
     }
 
-    public void CallMessageQueue() {
-    }
-
-    public WebViewObjectMessage CallMessage(string message) {
-        if (message != null) {
-            Debug.Log(message);
-        }
-
-        return (message != null) ? new WebViewObjectMessage(message) : null;
-    }
+//
+//    public WebViewObjectMessage CallMessage(string message) {
+//        if (message != null) {
+//            Debug.Log(message);
+//        }
+//
+//        return (message != null) ? new WebViewObjectMessage(message) : null;
+//    }
 
 //    public void CallMessage(string message) {
 //        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
