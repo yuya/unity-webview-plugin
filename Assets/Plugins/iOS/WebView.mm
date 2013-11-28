@@ -3,8 +3,7 @@
 extern UIViewController *UnityGetGLViewController();
 extern "C" void UnitySendMessage(const char *, const char *, const char *);
 
-//NSString *customScheme     = @"webviewbridge:";
-//NSInteger *customSchemeLen = [customScheme length];
+NSString *customScheme = @"webviewbridge:";
 
 char *MakeStringCopy (const char *string) {
     if (string == NULL) {
@@ -22,11 +21,12 @@ char *MakeStringCopy (const char *string) {
 @interface WebViewPlugin : NSObject<UIWebViewDelegate>
 @property (nonatomic, retain) UIWebView *webView;
 @property (nonatomic, copy)   NSString  *gameObjectName;
+@property (nonatomic, copy)   NSString  *customScheme;
 @end
 
 @implementation WebViewPlugin
 
-- (id)initWithGameObjectName:(const char *)name {
+- (id)initWithGameObjectName:(const char *)name customScheme:(const char *)scheme {
     self = [super init];
     
     if (self) {
@@ -38,6 +38,10 @@ char *MakeStringCopy (const char *string) {
         [view addSubview:_webView];
         
         _gameObjectName   = [NSString stringWithUTF8String:name];
+        _customScheme     = [NSString stringWithUTF8String:scheme];
+        
+        NSLog(_gameObjectName);
+        NSLog(_customScheme);
     }
     
     return self;
@@ -57,20 +61,8 @@ char *MakeStringCopy (const char *string) {
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *url = [[request URL] absoluteString];
     
-    //    if ([url hasPrefix:customScheme]) {
-    //        NSLog(@"NSURL HAS PREFIX WEBVIEWBRIDGE!!");
-    //        UnitySendMessage([_gameObjectName UTF8String], "BridgeMessage", [[url substringFromIndex:customSchemeLen] UTF8String]);
-    //
-    //        return NO;
-    //    }
-    if ([url hasPrefix:@"webviewbridge:"]) {
-        NSLog(@"NSURL HAS PREFIX WEBVIEWBRIDGE!!");
-        //        NSLog(_gameObjectName);
-        //        NSLog([[url substringFromIndex:14] UTF8String]);
-        //        UnitySendMessage("WebViewObject", "BridgeMessage", [self webViewPluginPollMessage:_webView]);
-        //        UnitySendMessage("WebViewObject", "BridgeMessage", "MOMONGA IS YUMMY!!");
-        UnitySendMessage("WebViewObject", "CallMessage", [self callMessage]);
-        //        UnitySendMessage([_gameObjectName UTF8String], "BridgeMessage", [[url substringFromIndex:14] UTF8String]);
+    if ([url hasPrefix:customScheme]) {
+        UnitySendMessage("WebViewObject", "HandleMessage", [self callMessage]);
         
         return NO;
     }
@@ -144,24 +136,19 @@ char *MakeStringCopy (const char *string) {
 #pragma mark - Unity Plugin
 
 extern "C" {
-    void *webViewPluginInit(const char *gameObjectName);
+    void *webViewPluginInit(const char *name, const char *scheme);
     void webViewPluginDestroy(void *instance);
     void webViewPluginLoadURL(void *instance, const char *url);
     //    void webViewEvaluteJS(void *instance, const char *str);
     void webViewPluginSetVisibility(void *instance, BOOL visibility);
     void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height);
     void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom);
-    const char *webViewPluginCallMessage(void *instance);
-    
-    void hoge_();
-    void webViewPluginAlert();
 }
 
 static WebViewPlugin *webViewInstance;
 
-void *webViewPluginInit(const char *gameObjectName) {
-    id instance     = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName];
-    webViewInstance = instance;
+void *webViewPluginInit(const char *name, const char *scheme) {
+    id instance = [[WebViewPlugin alloc] initWithGameObjectName:name customScheme:scheme];
     
     return (void *)instance;
 }
@@ -209,27 +196,3 @@ void webViewPluginSetMargins(void *instance, int left, int top, int right, int b
     [webViewPlugin setMargins:left top:top right:right bottom:bottom];
 }
 
-const char *webViewPluginCallMessage(void *instance) {
-    WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-    
-    return [webViewPlugin callMessage];
-}
-
-void webViewPluginAlert() {
-    UIAlertView *alert = [[UIAlertView alloc] init];
-    
-    alert.title = @"TITLE_TITLE";
-    alert.message = @"MESSAGE_MESSAGE";
-    [alert addButtonWithTitle:@"OK"];
-    
-    [alert show];
-}
-
-void hoge_() {
-    UIAlertView *alert = [[UIAlertView alloc] init];
-    alert.title        = @"お知らせ";
-    alert.message      = @"完了しました";
-    
-    [alert addButtonWithTitle:@"確認"];
-    [alert show];
-}

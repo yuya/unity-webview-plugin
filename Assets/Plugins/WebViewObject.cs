@@ -26,11 +26,11 @@ public class WebViewObjectMessage {
 }
 
 public class WebViewObject : MonoBehaviour {
-    Callback callback;
+//    Callback callback;
     IntPtr webView;
 
     [DllImport("__Internal")]
-    private static extern IntPtr webViewPluginInit(string gameObject);
+    private static extern IntPtr webViewPluginInit(string name, string scheme, string caller);
     [DllImport("__Internal")]
     private static extern int webViewPluginDestroy(IntPtr instance);
     [DllImport("__Internal")]
@@ -38,17 +38,24 @@ public class WebViewObject : MonoBehaviour {
 //    [DllImport("__Internal")]
 //    private static extern void webViewEvaluateJS(IntPtr instance, string str);
     [DllImport("__Internal")]
-    private static extern void webViewPluginAlert();
-    [DllImport("__Internal")]
     private static extern void webViewPluginSetVisibility(IntPtr instance, bool visibility);
     [DllImport("__Internal")]
     private static extern void webViewPluginSetFrame(IntPtr instance, int x, int y, int width, int height);
     [DllImport("__Internal")]
     private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom); 
 
-    public void Init(Callback cb = null) {
-        callback = cb;
-        webView  = webViewPluginInit(name);
+    private static ArrayList messageQueue = new ArrayList();
+    private GameObject callerObject;
+
+//    public void Init(Callback cb = null) {
+    public void Init(string name, string scheme, string caller) {
+//        callback = cb;
+        webView  = webViewPluginInit(name, scheme, caller);
+        callerObject = GameObject.Find(caller);
+
+        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
+        Debug.Log("HOGEEEEEEEEEEEEEEEE");
+        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     void OnDestroy() {
@@ -91,15 +98,27 @@ public class WebViewObject : MonoBehaviour {
         webViewPluginLoadURL(webView, url);
     }
 
-    public void Alert() {
-        webViewPluginAlert();
+    public void HandleMessage(string message) {
+        messageQueue.Add(message);
+        callerObject.SendMessage("LogLogCombo", message);
     }
 
-    public void CallMessage(string message) {
-        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
-        Debug.Log(message);
-        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
+    public void CallMessageQueue() {
     }
+
+    public WebViewObjectMessage CallMessage(string message) {
+        if (message != null) {
+            Debug.Log(message);
+        }
+
+        return (message != null) ? new WebViewObjectMessage(message) : null;
+    }
+
+//    public void CallMessage(string message) {
+//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
+//        Debug.Log(message);
+//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
+//    }
 
 //    public void EvaluteJS(string str) {
 //        if (webView == IntPtr.Zero) {
