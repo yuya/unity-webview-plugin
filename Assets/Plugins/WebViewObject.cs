@@ -44,23 +44,7 @@ public class WebViewObject : MonoBehaviour {
     [DllImport("__Internal")]
     private static extern void webViewPluginSetFrame(IntPtr instance, int x, int y, int width, int height);
     [DllImport("__Internal")]
-    private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom);
-    [DllImport("__Internal")]
-    private static extern void hoge_();
-
-//    private static WebViewObject _instance = null;
-//    public static WebViewObject Instance {
-//        get {
-//            if (_instance == null) {
-//                GameObject gameObject = new GameObject("WebViewObject");
-//                DontDestroyOnLoad(gameObject);
-//
-//                _instance = gameObject.AddComponent<WebViewObject>();
-//            }
-//
-//            return _instance;
-//        }
-//    }
+    private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom); 
 
     public void Init(Callback cb = null) {
         callback = cb;
@@ -104,28 +88,17 @@ public class WebViewObject : MonoBehaviour {
             return;
         }
 
-        Debug.Log(url);
         webViewPluginLoadURL(webView, url);
-    }
-
-//    public WebViewObjectMessage CallMessage(string message) {
-//        Debug.Log(message);
-//
-//        return (message != null) ? new WebViewObjectMessage(message) : null;
-//    }
-
-    public void CallMessage(string message) {
-        Debug.Log(message);
-
-//        return (message != null) ? new WebViewObjectMessage(message) : null;
     }
 
     public void Alert() {
         webViewPluginAlert();
     }
 
-    public void hoge() {
-        hoge_();
+    public void CallMessage(string message) {
+        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
+        Debug.Log(message);
+        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
     }
 
 //    public void EvaluteJS(string str) {

@@ -68,7 +68,7 @@ char *MakeStringCopy (const char *string) {
         //        NSLog(_gameObjectName);
         //        NSLog([[url substringFromIndex:14] UTF8String]);
         //        UnitySendMessage("WebViewObject", "BridgeMessage", [self webViewPluginPollMessage:_webView]);
-//        UnitySendMessage("WebViewObject", "BridgeMessage", "MOMONGA IS YUMMY!!");
+        //        UnitySendMessage("WebViewObject", "BridgeMessage", "MOMONGA IS YUMMY!!");
         UnitySendMessage("WebViewObject", "CallMessage", [self callMessage]);
         //        UnitySendMessage([_gameObjectName UTF8String], "BridgeMessage", [[url substringFromIndex:14] UTF8String]);
         
