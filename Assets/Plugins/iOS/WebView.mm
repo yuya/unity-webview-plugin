@@ -40,15 +40,14 @@ char *MakeStringCopy (const char *string) {
         _gameObjectName   = [NSString stringWithUTF8String:name];
         _customScheme     = [NSString stringWithUTF8String:scheme];
         
-        NSLog(_gameObjectName);
-        NSLog(_customScheme);
+//        NSLog(_gameObjectName);
+//        NSLog(_customScheme);
     }
     
     return self;
 }
 
 - (void)dealloc {
-    NSLog(@"##### DEALLOC #####");
     _webView.delegate = nil;
     [_webView removeFromSuperview];
     
@@ -79,11 +78,11 @@ char *MakeStringCopy (const char *string) {
     [_webView loadRequest:req];
 }
 
-//- (void)evaluateJS:(const char *)str {
-//    NSString *js = [NSString stringWithUTF8String:str];
-//
-//    [_webView stringByEvaluatingJavaScriptFromString:js];
-//}
+- (void)evaluateJS:(const char *)str {
+    NSString *js = [NSString stringWithUTF8String:str];
+
+    [_webView stringByEvaluatingJavaScriptFromString:js];
+}
 
 - (void)setVisibility:(BOOL)visibility {
     _webView.hidden = visibility ? NO : YES;
@@ -139,13 +138,13 @@ extern "C" {
     void *webViewPluginInit(const char *name, const char *scheme);
     void webViewPluginDestroy(void *instance);
     void webViewPluginLoadURL(void *instance, const char *url);
-    //    void webViewEvaluteJS(void *instance, const char *str);
+    void webViewEvaluteJS(void *instance, const char *str);
     void webViewPluginSetVisibility(void *instance, BOOL visibility);
     void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height);
     void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom);
 }
 
-static WebViewPlugin *webViewInstance;
+//static WebViewPlugin *webViewInstance;
 
 void *webViewPluginInit(const char *name, const char *scheme) {
     id instance = [[WebViewPlugin alloc] initWithGameObjectName:name customScheme:scheme];
@@ -165,11 +164,11 @@ void webViewPluginLoadURL(void *instance, const char *url) {
     [webViewPlugin loadURL:url];
 }
 
-//void webViewEvaluteJS(void *instance, const char *str) {
-//    WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-//
-//    [webViewPlugin evaluateJS:str];
-//}
+void webViewEvaluteJS(void *instance, const char *str) {
+    WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
+
+    [webViewPlugin evaluateJS:str];
+}
 
 void webViewPluginSetVisibility(void *instance, BOOL visibility) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;

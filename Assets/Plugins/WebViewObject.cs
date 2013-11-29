@@ -53,9 +53,9 @@ public class WebViewObject : MonoBehaviour {
         webView      = webViewPluginInit(name, scheme, caller);
         callerObject = GameObject.Find(caller);
 
-        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
-        Debug.Log("HOGEEEEEEEEEEEEEEEE");
-        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
+//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
+//        Debug.Log("HOGEEEEEEEEEEEEEEEE");
+//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
     }
 
     void OnDestroy() {
@@ -116,6 +116,10 @@ public class WebViewObject : MonoBehaviour {
 
     public void HandleMessage(string message) {
         callerObject.SendMessage("CallMessage", (message != null) ? new WebViewObjectMessage(message) : null);
+    }
+
+    public void Destroy() {
+        webViewPluginDestroy(webView);
     }
 
 //

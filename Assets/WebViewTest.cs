@@ -15,6 +15,10 @@ public class WebViewTest : MonoBehaviour {
 //        _isStarted = true;
     }
 
+//    void Update() {
+//        Init();
+//    }
+
     void OnGUI() {
         Init();
     }
@@ -36,9 +40,30 @@ public class WebViewTest : MonoBehaviour {
 //        Debug.Log(message);
 //    }
 
+    public void DOMContentLoaded() {
+        Debug.Log("DOMContentLoaded");
+    }
+
+    public void WindowOnLoad() {
+        Debug.Log("Window OnLoad");
+    }
+
+    public void CloseWebView() {
+        webViewObject.SetVisibility(false);
+        webViewObject.Destroy();
+    }
+
     public void CallMessage(WebViewObjectMessage message) {
-        Debug.Log("===== CallMessage =====");
-        Debug.Log(message.path);
-        Debug.Log(message.args);
+        switch (message.path) {
+            case "domcontentloaded":
+                DOMContentLoaded();
+                break;
+            case "load":
+                WindowOnLoad();
+                break;
+            case "close":
+                CloseWebView();
+                break; 
+        };
     }
 }
