@@ -1,4 +1,5 @@
 dist
+.metadata
 #Unity3D
 *.sln
 *.userprefs
