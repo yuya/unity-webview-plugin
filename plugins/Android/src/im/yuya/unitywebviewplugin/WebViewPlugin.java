@@ -1,34 +1,29 @@
-package im.yuya.unitywebview;
+package im.yuya.unitywebviewplugin;
 
 import com.unity3d.player.UnityPlayer;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.net.Uri;
-import android.utl.Log;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.JsResult;
-import android.widget.FrameLayout;
 
 class WebViewPluginInterface {
-    private String gameObject;
-    
-    public WebViePluginInterface(final String name) {
-    	gameObject = name;
-    }
-    
-//    public void call(string message) {
-//    	UnityPlayer.UnitySendMessage("WebViewObject", "HandleMessage", message);
-////    	UnityPlayer.UnitySendMessage(gameObject, "");
-//    }
+	private String gameObject;
+	
+	public WebViewPluginInterface(final String name) {
+		gameObject = name;
+	}
 }
 
 public class WebViewPlugin {
@@ -37,9 +32,9 @@ public class WebViewPlugin {
 	private Pattern customSchemeRe    = Pattern.compile("^" + customScheme + ":\\/\\/");
 	private static FrameLayout layout = null;
 	
-	private class WebViewUrlSchemeHook extends WebViewClient {
+	private class WebViewClientSchemeHook extends WebViewClient {
 		@Override
-		public class shouldOverrideUrlLoading(WebView view, String url) {
+		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			if (Uri.parse(url).getScheme().toString().equals(customScheme)) {
 				callMessage();
 			}
@@ -48,8 +43,29 @@ public class WebViewPlugin {
 		}
 	}
 	
+	private class WebChromeClientAlertHook extends WebChromeClient {
+		@Override
+		public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+			Matcher matcher = customSchemeRe.matcher(message);
+
+			if (matcher.lookingAt()) {
+				Log.d("### UNITY_SEND_MESSAGE: ", matcher.replaceFirst(""));
+				UnityPlayer.UnitySendMessage("WebViewObject", "HandleMessage", matcher.replaceFirst(""));
+				
+				try {
+					return true;
+				}
+				finally {
+					result.confirm();
+				}
+			}
+			else {
+				return false;
+			}
+		}	
+	}
+	
 	public WebViewPlugin() {
-		
 	}
 	
 	public void Init(final String name) {
@@ -59,7 +75,7 @@ public class WebViewPlugin {
 			public void run() {
 				webView = new WebView(activity);
 				WebSettings webSettings = webView.getSettings();
-
+				
 				webView.setVisibility(View.GONE);
 				webView.setFocusable(true);
 				webView.setFocusableInTouchMode(true);
@@ -78,32 +94,11 @@ public class WebViewPlugin {
 						Gravity.NO_GRAVITY));
 				
 				webSettings.setSupportZoom(false);
-				webSettings.setJavascriptEnabled(true);
-				webSettings.setPluginsEnabled(true);
+				webSettings.setJavaScriptEnabled(true);
+//				webSettings.setPluginsEnabled(true);
 
-				webView.setWebViewClient(new WebViewUrlSchemeHookClient());
-				webView.setWebChromeClient(new WebChromeClient() {
-					@Override
-					public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-						Matcher matcher = customSchemeRe.matcher(message);
-
-						if (matcher.lookingAt()) {
-							// Unity Send Message
-							Log.d("### UNITY_SEND_MESSAGE: ", matcher.replaceFirst(""));
-							UnityPlayer.UnitySendMessage(mGameObject, "HandleMessage", matcher.replaceFirst(""));
-							
-							try {
-								return true;
-							}
-							finally {
-								result.confirm();
-							}
-						}
-						else {
-							return false;
-						}
-					}
-				});
+				webView.setWebViewClient(new WebViewClientSchemeHook());
+				webView.setWebChromeClient(new WebChromeClientAlertHook());
 			}
 		});
 	}
@@ -135,7 +130,9 @@ public class WebViewPlugin {
 		final Activity activity = UnityPlayer.currentActivity;
 		
 		activity.runOnUiThread(new Runnable() {
-			webView.loadUrl("javascript:" + str);
+			public void run() {
+				webView.loadUrl("javascript:" + str);
+			}
 		});
 	}
 	
