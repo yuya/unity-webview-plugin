@@ -46,7 +46,6 @@ public class WebViewObject : MonoBehaviour {
     [DllImport("__Internal")]
     private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom); 
 
-    private static ArrayList messageQueue = new ArrayList();
     private GameObject callerObject;
 
     //    public void Init(Callback cb = null) {

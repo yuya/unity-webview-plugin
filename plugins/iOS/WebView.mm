@@ -3,8 +3,6 @@
 extern UIViewController *UnityGetGLViewController();
 extern "C" void UnitySendMessage(const char *, const char *, const char *);
 
-NSString *customScheme = @"webviewbridge";
-
 char *MakeStringCopy (const char *string) {
     if (string == NULL) {
         return NULL;
@@ -37,11 +35,8 @@ char *MakeStringCopy (const char *string) {
         
         [view addSubview:_webView];
         
-        _gameObjectName   = [NSString stringWithUTF8String:name];
-        _customScheme     = [NSString stringWithUTF8String:scheme];
-        
-//        NSLog(_gameObjectName);
-//        NSLog(_customScheme);
+        self.gameObjectName   = [NSString stringWithUTF8String:name];
+        self.customScheme     = [NSString stringWithUTF8String:scheme];
     }
     
     return self;
@@ -51,8 +46,8 @@ char *MakeStringCopy (const char *string) {
     _webView.delegate = nil;
     [_webView removeFromSuperview];
     
-    _webView        = nil;
-    _gameObjectName = nil;
+    _webView            = nil;
+    self.gameObjectName = nil;
     
     [super dealloc];
 }
@@ -60,8 +55,8 @@ char *MakeStringCopy (const char *string) {
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *url = [[request URL] absoluteString];
     
-    if ([url hasPrefix:customScheme]) {
-        UnitySendMessage("WebViewObject", "HandleMessage", [self callMessage]);
+    if ([url hasPrefix:self.customScheme]) {
+        UnitySendMessage(self.gameObjectName, "HandleMessage", [self callMessage]);
         
         return NO;
     }
