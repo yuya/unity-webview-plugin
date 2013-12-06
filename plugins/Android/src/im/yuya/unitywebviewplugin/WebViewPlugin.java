@@ -21,6 +21,7 @@ import android.webkit.JsResult;
 
 public class WebViewPlugin {
 	private WebView webView;
+	private String  gameObjectName;
 	private String  customScheme;
 	private Pattern customSchemeRe;
 
@@ -43,8 +44,7 @@ public class WebViewPlugin {
 			Matcher matcher = customSchemeRe.matcher(message);
 
 			if (matcher.lookingAt()) {
-				Log.d("### ANDROID_WEBVIEW", matcher.replaceFirst(""));
-				UnityPlayer.UnitySendMessage("WebViewObject", "HandleMessage", matcher.replaceFirst(""));
+				UnityPlayer.UnitySendMessage(gameObjectName, "HandleMessage", matcher.replaceFirst(""));
 				
 				try {
 					return true;
@@ -66,6 +66,7 @@ public class WebViewPlugin {
 	public void Init(final String name, final String scheme) {
 		final Activity activity = UnityPlayer.currentActivity;
 
+		gameObjectName = name;
 		customScheme   = scheme;
 		customSchemeRe = Pattern.compile("^" + customScheme + ":\\/\\/");
 		
