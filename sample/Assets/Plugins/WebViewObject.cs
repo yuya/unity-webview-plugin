@@ -26,7 +26,9 @@ public class WebViewObjectMessage {
 }
 
 public class WebViewObject : MonoBehaviour {
-//    Callback callback;
+    #region iOS
+    #if UNITY_IPHONE
+    //    Callback callback;
     IntPtr webView;
 
     [DllImport("__Internal")]
@@ -35,8 +37,8 @@ public class WebViewObject : MonoBehaviour {
     private static extern int webViewPluginDestroy(IntPtr instance);
     [DllImport("__Internal")]
     private static extern void webViewPluginLoadURL(IntPtr instance, string url);
-//    [DllImport("__Internal")]
-//    private static extern void webViewEvaluateJS(IntPtr instance, string str);
+    //    [DllImport("__Internal")]
+    //    private static extern void webViewEvaluateJS(IntPtr instance, string str);
     [DllImport("__Internal")]
     private static extern void webViewPluginSetVisibility(IntPtr instance, bool visibility);
     [DllImport("__Internal")]
@@ -47,15 +49,11 @@ public class WebViewObject : MonoBehaviour {
     private static ArrayList messageQueue = new ArrayList();
     private GameObject callerObject;
 
-//    public void Init(Callback cb = null) {
+    //    public void Init(Callback cb = null) {
     public void Init(string name, string scheme, string caller) {
-//        callback = cb;
-        webView      = webViewPluginInit(name, scheme, caller);
-        callerObject = GameObject.Find(caller);
-
-//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
-//        Debug.Log("HOGEEEEEEEEEEEEEEEE");
-//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@");
+    //        callback = cb;
+    webView      = webViewPluginInit(name, scheme, caller);
+    callerObject = GameObject.Find(caller);
     }
 
     void OnDestroy() {
@@ -65,22 +63,6 @@ public class WebViewObject : MonoBehaviour {
 
         webViewPluginDestroy(webView);
     }
-
-//    private object StringToDictionary(string str) {
-////        Dictionary<string, string> dic = new Dictionary<key, value>();
-//        string[] split = str.Split("?"[0]);
-//        string path    = split[0];
-//        Hashtable args = new Hashtable();
-//
-//        if (split.Length > 1) {
-//            foreach(string pair in split[1].Split("&"[0])) {
-//                string[] keys = pair.Split("="[0]);
-//                args[keys[0]] = WWW.UnEscapeURL(keys[1]);
-//            }
-//        }
-//
-//        return 
-//    }
 
     public void SetCenterPositionWithScale(Vector2 center, Vector2 scale) {
         if (webView == IntPtr.Zero) {
@@ -121,7 +103,72 @@ public class WebViewObject : MonoBehaviour {
     public void Destroy() {
         webViewPluginDestroy(webView);
     }
+    #endif
+    #endregion
 
+    #region Android
+    #if UNITY_ANDROID
+    //    Callback callback;
+    AndroidJavaObject webView;
+
+    private GameObject callerObject;
+
+    public void Init(string name, string scheme, string caller) {
+        //        callback = cb;
+        webView      = new AndroidJavaObject("im.yuya.unitywebviewplugin.WebViewPlugin");
+        callerObject = GameObject.Find(caller);
+
+        webView.Call("Init", name, scheme);
+    }
+
+    void OnDestroy() {
+        if (webView == null) {
+            return;
+        }
+
+        webView.Call("Destroy");
+    }
+
+    public void SetMargins(int left, int top, int right, int bottom) {
+        if (webView == null) {
+            return;
+        }
+
+        webView.Call("SetMargins", left, top, right, bottom);
+    }
+
+    public void SetVisibility(bool value) {
+        if (webView == null) {
+            return;
+        }
+
+        webView.Call("SetVisibility", value);
+    }
+
+    public void LoadURL(string url) {
+        if (webView == null) {
+            return;
+        }
+
+        webView.Call("LoadURL", url);
+    }
+
+    public void EvaluteJS(string str) {
+        if (webView == null) {
+            return;
+        }
+
+        webView.Call("LoadURL", "javascript:" + str);
+    }
+    public void HandleMessage(string message) {
+        callerObject.SendMessage("CallMessage", (message != null) ? new WebViewObjectMessage(message) : null);
+    }
+
+    public void Destroy() {
+        webView.Call("Destroy");
+    }
+    #endif
+    #endregion
 //
 //    public WebViewObjectMessage CallMessage(string message) {
 //        if (message != null) {

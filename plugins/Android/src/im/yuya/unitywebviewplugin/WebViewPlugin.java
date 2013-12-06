@@ -3,6 +3,7 @@ package im.yuya.unitywebviewplugin;
 import com.unity3d.player.UnityPlayer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.net.Uri;
@@ -18,18 +19,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.JsResult;
 
-class WebViewPluginInterface {
-	private String gameObject;
-	
-	public WebViewPluginInterface(final String name) {
-		gameObject = name;
-	}
-}
-
 public class WebViewPlugin {
 	private WebView webView;
-	private String customScheme       = "webviewbridge";
-	private Pattern customSchemeRe    = Pattern.compile("^" + customScheme + ":\\/\\/");
+	private String  customScheme;
+	private Pattern customSchemeRe;
+
 	private static FrameLayout layout = null;
 	
 	private class WebViewClientSchemeHook extends WebViewClient {
@@ -49,7 +43,7 @@ public class WebViewPlugin {
 			Matcher matcher = customSchemeRe.matcher(message);
 
 			if (matcher.lookingAt()) {
-				Log.d("### UNITY_SEND_MESSAGE: ", matcher.replaceFirst(""));
+				Log.d("### ANDROID_WEBVIEW", matcher.replaceFirst(""));
 				UnityPlayer.UnitySendMessage("WebViewObject", "HandleMessage", matcher.replaceFirst(""));
 				
 				try {
@@ -68,10 +62,15 @@ public class WebViewPlugin {
 	public WebViewPlugin() {
 	}
 	
-	public void Init(final String name) {
+	@SuppressLint("SetJavaScriptEnabled")
+	public void Init(final String name, final String scheme) {
 		final Activity activity = UnityPlayer.currentActivity;
+
+		customScheme   = scheme;
+		customSchemeRe = Pattern.compile("^" + customScheme + ":\\/\\/");
 		
 		activity.runOnUiThread(new Runnable() {
+			@SuppressWarnings("deprecation")
 			public void run() {
 				webView = new WebView(activity);
 				WebSettings webSettings = webView.getSettings();
@@ -93,12 +92,12 @@ public class WebViewPlugin {
 						LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT,
 						Gravity.NO_GRAVITY));
 				
+				webView.setWebViewClient(new WebViewClientSchemeHook());
+				webView.setWebChromeClient(new WebChromeClientAlertHook());
+
 				webSettings.setSupportZoom(false);
 				webSettings.setJavaScriptEnabled(true);
 //				webSettings.setPluginsEnabled(true);
-
-				webView.setWebViewClient(new WebViewClientSchemeHook());
-				webView.setWebChromeClient(new WebChromeClientAlertHook());
 			}
 		});
 	}
@@ -154,6 +153,7 @@ public class WebViewPlugin {
 	}
 	
 	public void SetMargins(int left, int top, int right, int bottom) {
+		@SuppressWarnings("deprecation")
 		final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, Gravity.NO_GRAVITY);
 		Activity activity = UnityPlayer.currentActivity;
