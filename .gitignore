@@ -1,5 +1,6 @@
 dist
 .metadata
+
 #Unity3D
 *.sln
 *.userprefs
@@ -9,10 +10,10 @@ dist
 .DS_Store
 ._*
 Thumbs.db
-/Library/
-/obj/
-/Temp/
-/Assets/-tk2d.asset*
+Library/
+obj/
+Temp/
+Assets/-tk2d.asset*
 
 # for editors
 .*.sw[p|o|n]
