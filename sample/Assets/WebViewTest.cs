@@ -45,15 +45,15 @@ public class WebViewTest : MonoBehaviour {
 //        Debug.Log(message);
 //    }
 
-    public void DOMContentLoaded() {
+    private void DOMContentLoaded() {
         Debug.Log("### __DOMContentLoaded__");
     }
 
-    public void WindowOnLoad() {
+    private void WindowOnLoad() {
         Debug.Log("### __Window_OnLoad__");
     }
 
-    public void CloseWebView() {
+    private void CloseWebView() {
         Debug.Log("### __Close_Window__");
 
         webViewObject.SetVisibility(false);

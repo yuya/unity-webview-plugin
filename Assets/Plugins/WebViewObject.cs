@@ -47,21 +47,21 @@ public class WebViewObject : MonoBehaviour {
     private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom); 
 
     private GameObject callerObject;
-    // private static WebViewObject _instance = null;
-    // public static WebViewObject Instance {
-    //     get {
-    //         if (_instance == null) {
-    //             _instance = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
-    //         }
+    private static WebViewObject _instance = null;
+    public static WebViewObject Instance {
+        get {
+            if (_instance == null) {
+                _instance = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
+            }
 
-    //         return _instance;
-    //     }
-    // }
+            return _instance;
+        }
+    }
 
     //    public void Init(Callback cb = null) {
     public void Init(string name, string scheme, string caller) {
     //        callback = cb;
-        webView      = webViewPluginInit(name, scheme);
+        webView      = webViewPluginInit(name, scheme, caller);
         callerObject = GameObject.Find(caller);
     }
 
@@ -121,6 +121,17 @@ public class WebViewObject : MonoBehaviour {
     AndroidJavaObject webView;
 
     private GameObject callerObject;
+    private static WebViewObject _instance = null;
+    public static WebViewObject Instance {
+        get {
+            if (_instance == null) {
+                GameObject gameObject = new GameObject("WebViewObject");
+                _instance = gameObject.AddComponent<WebViewObject>();
+            }
+
+            return _instance;
+        }
+    }
 
     public void Init(string name, string scheme, string caller) {
         //        callback = cb;

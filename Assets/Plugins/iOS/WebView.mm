@@ -56,7 +56,7 @@ char *MakeStringCopy (const char *string) {
     NSString *url = [[request URL] absoluteString];
     
     if ([url hasPrefix:self.customScheme]) {
-        UnitySendMessage(self.gameObjectName, "HandleMessage", [self callMessage]);
+        UnitySendMessage([self.gameObjectName UTF8String], "HandleMessage", [self callMessage]);
         
         return NO;
     }
@@ -75,7 +75,7 @@ char *MakeStringCopy (const char *string) {
 
 - (void)evaluateJS:(const char *)str {
     NSString *js = [NSString stringWithUTF8String:str];
-
+    
     [_webView stringByEvaluatingJavaScriptFromString:js];
 }
 
@@ -161,7 +161,7 @@ void webViewPluginLoadURL(void *instance, const char *url) {
 
 void webViewEvaluteJS(void *instance, const char *str) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-
+    
     [webViewPlugin evaluateJS:str];
 }
 
