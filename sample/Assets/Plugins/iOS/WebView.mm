@@ -32,6 +32,7 @@ char *MakeStringCopy (const char *string) {
         _webView          = [[UIWebView alloc] initWithFrame:view.frame];
         _webView.delegate = self;
         _webView.hidden   = YES;
+        _webView.scrollView.webView.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
         
         [view addSubview:_webView];
         

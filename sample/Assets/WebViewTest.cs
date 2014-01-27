@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 
 public class WebViewTest : MonoBehaviour {
     WebViewObject webViewObject;
-//    private bool _isStarted  = false;
 
     private string customScheme = "webviewbridge";
     private string currentClass = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.ToString();
@@ -18,10 +17,6 @@ public class WebViewTest : MonoBehaviour {
 //        _isStarted = true;
     }
 
-//    void Update() {
-//        Init();
-//    }
-
     void OnGUI() {
         Init();
     }
@@ -30,12 +25,9 @@ public class WebViewTest : MonoBehaviour {
         if (GUILayout.Button("OPEN URL", GUILayout.MinWidth(200), GUILayout.MinHeight(100))) {
             Debug.Log("### OPEN URL");
 
-//            webViewObject.Init("WebViewObject", "webviewbridge:", System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-//            webViewObject.Init("WebViewObject", "webviewbridge", "WebViewTest");
-//            System.Reflection.MethodBase.GetCurrentMethod()
-            webViewObject.Init("WebViewObject", customScheme, currentClass);
+            webViewObject.Init(webViewObject.name, customScheme, currentClass);
 //            webViewObject.LoadURL("http://yahoo.co.jp/");
-            webViewObject.LoadURL("http://172.21.26.40:8000/");
+            webViewObject.LoadURL("http://172.21.26.40:8001/");
             webViewObject.SetVisibility(true);
         }
     }
@@ -62,15 +54,15 @@ public class WebViewTest : MonoBehaviour {
 
     public void CallMessage(WebViewObjectMessage message) {
         switch (message.path) {
-            case "domcontentloaded":
-                DOMContentLoaded();
-                break;
-            case "load":
-                WindowOnLoad();
-                break;
-            case "close":
-                CloseWebView();
-                break; 
+        case "domcontentloaded":
+            DOMContentLoaded();
+            break;
+        case "load":
+            WindowOnLoad();
+            break;
+        case "close":
+            CloseWebView();
+            break; 
         };
     }
 }

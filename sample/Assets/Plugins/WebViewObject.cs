@@ -47,18 +47,7 @@ public class WebViewObject : MonoBehaviour {
     private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom); 
 
     private GameObject callerObject;
-    // private static WebViewObject _instance = null;
-    // public static WebViewObject Instance {
-    //     get {
-    //         if (_instance == null) {
-    //             _instance = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
-    //         }
-
-    //         return _instance;
-    //     }
-    // }
-
-    //    public void Init(Callback cb = null) {
+    
     public void Init(string name, string scheme, string caller) {
     //        callback = cb;
         webView      = webViewPluginInit(name, scheme);
