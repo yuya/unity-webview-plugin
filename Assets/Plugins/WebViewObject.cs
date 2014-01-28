@@ -1,10 +1,29 @@
-﻿using UnityEngine;
+﻿/*
+ * Copyright (C) 2011 Keijiro Takahashi
+ * Copyright (C) 2012 GREE, Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty.  In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ */
+
+using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
-using Callback = System.Action<string>;
 
 public class WebViewObjectMessage {
     public string path;
@@ -26,9 +45,8 @@ public class WebViewObjectMessage {
 }
 
 public class WebViewObject : MonoBehaviour {
-    #region iOS
-    #if UNITY_IPHONE
-    //    Callback callback;
+#region iOS
+#if UNITY_IPHONE
     IntPtr webView;
 
     [DllImport("__Internal")]
@@ -47,20 +65,7 @@ public class WebViewObject : MonoBehaviour {
     private static extern void webViewPluginSetMargins(IntPtr instance, int left, int top, int right, int bottom); 
 
     private GameObject callerObject;
-    private static WebViewObject _instance = null;
-    public static WebViewObject Instance {
-        get {
-            if (_instance == null) {
-                _instance = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
-            }
-
-            return _instance;
-        }
-    }
-
-    //    public void Init(Callback cb = null) {
     public void Init(string name, string scheme, string caller) {
-    //        callback = cb;
         webView      = webViewPluginInit(name, scheme, caller);
         callerObject = GameObject.Find(caller);
     }
@@ -112,29 +117,15 @@ public class WebViewObject : MonoBehaviour {
     public void Destroy() {
         webViewPluginDestroy(webView);
     }
-    #endif
-    #endregion
+#endif
+#endregion
 
-    #region Android
-    #if UNITY_ANDROID
-    //    Callback callback;
+#region Android
+#if UNITY_ANDROID
     AndroidJavaObject webView;
 
     private GameObject callerObject;
-    private static WebViewObject _instance = null;
-    public static WebViewObject Instance {
-        get {
-            if (_instance == null) {
-                GameObject gameObject = new GameObject("WebViewObject");
-                _instance = gameObject.AddComponent<WebViewObject>();
-            }
-
-            return _instance;
-        }
-    }
-
     public void Init(string name, string scheme, string caller) {
-        //        callback = cb;
         webView      = new AndroidJavaObject("im.yuya.unitywebviewplugin.WebViewPlugin");
         callerObject = GameObject.Find(caller);
 
@@ -187,28 +178,6 @@ public class WebViewObject : MonoBehaviour {
     public void Destroy() {
         webView.Call("Destroy");
     }
-    #endif
-    #endregion
-//
-//    public WebViewObjectMessage CallMessage(string message) {
-//        if (message != null) {
-//            Debug.Log(message);
-//        }
-//
-//        return (message != null) ? new WebViewObjectMessage(message) : null;
-//    }
-
-//    public void CallMessage(string message) {
-//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
-//        Debug.Log(message);
-//        Debug.Log("@@@@@@@@@@@@@@@@@@@@@@@");
-//    }
-
-//    public void EvaluteJS(string str) {
-//        if (webView == IntPtr.Zero) {
-//            return;
-//        }
-//
-//        webViewEvaluateJS(webView, str);
-//    }
+#endif
+#endregion
 }
