@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2011 Keijiro Takahashi
  * Copyright (C) 2012 GREE, Inc.
+ * Copyright (C) 2014 Yuya Hashimoto
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -51,14 +52,15 @@ char *MakeStringCopy (const char *string) {
     if (self) {
         UIView *view      = UnityGetGLViewController().view;
         _webView          = [[UIWebView alloc] initWithFrame:view.frame];
+
         _webView.delegate = self;
         _webView.hidden   = YES;
         _webView.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
         
         [view addSubview:_webView];
         
-        self.gameObjectName   = [NSString stringWithUTF8String:name];
-        self.customScheme     = [NSString stringWithUTF8String:scheme];
+        self.gameObjectName = [NSString stringWithUTF8String:name];
+        self.customScheme   = [NSString stringWithUTF8String:scheme];
     }
     
     return self;
@@ -78,7 +80,7 @@ char *MakeStringCopy (const char *string) {
     NSString *url = [[request URL] absoluteString];
     
     if ([url hasPrefix:self.customScheme]) {
-        UnitySendMessage([self.gameObjectName UTF8String], "HandleMessage", [self callMessage]);
+        UnitySendMessage([self.gameObjectName UTF8String], "HandleMessage", [self shiftQueue]);
         
         return NO;
     }
@@ -136,8 +138,8 @@ char *MakeStringCopy (const char *string) {
     _webView.frame = frame;
 }
 
-- (char *)callMessage {
-    const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediatorInstance.callMessage()"].UTF8String;
+- (char *)shiftQueue {
+    const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
     
     if (message) {
         return MakeStringCopy(message);

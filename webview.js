@@ -1,34 +1,13 @@
 ;(function (global, document) {
 var URL_SCHEME = "webviewbridge://",
-    userAgent  = navigator.userAgent.toLowerCase(),
-    isAndroid  = /android/.test(userAgent),
+    queue      = [],
     body       = document.body,
     iframeBase = document.createElement("iframe"),
-    iframe;
+    inlineCSS  = "position: absolute; width: 1px; height: 1px; border: none; visibility: hidden;",
+    isAndroid  = /Android/.test(navigator.userAgent),
+    WebViewMediator;
 
-// Array.isArray
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray
-if (!Array.isArray) {
-    Array.isArray = function (obj) {
-        return Object.prototype.toString.call(obj) === "[object Array]";
-    };
-}
-
-// Object.keys
-// http://uupaa.hatenablog.com/entry/2012/02/04/145400
-if (!Object.keys) {
-    Object.keys = function (source) {
-        var ret = [], i = 0, key;
-
-        for (key in source) {
-            if (source.hasOwnProperty(key)) {
-                ret[i++] = key;
-            }
-        }
-
-        return ret;
-    };
-}
+iframeBase.setAttribute("style", inlineCSS);
 
 function each(collection, iterator) {
     var i = 0, len, ary, key;
@@ -52,7 +31,8 @@ function each(collection, iterator) {
 }
 
 function callCustomURLScheme() {
-    iframe     = iframeBase.cloneNode(false);
+    var iframe = iframeBase.cloneNode(false);
+
     iframe.src = URL_SCHEME;
 
     body.appendChild(iframe);
@@ -61,12 +41,10 @@ function callCustomURLScheme() {
     iframe = null;
 }
 
-function WebViewMediator() {
-    var message, stack;
-
-    this.queue   = [];
-    this.command = function (path, args) {
-        message = isAndroid ? URL_SCHEME + path : path;
+WebViewMediator = {
+    call: function (path, args) {
+        var message = isAndroid ? URL_SCHEME + path : path,
+            stack;
 
         if (args) {
             stack = [];
@@ -78,16 +56,13 @@ function WebViewMediator() {
             message += "?" + stack.join("&");
         }
 
-        this.queue.push(message);
+        queue.push(message);
         callCustomURLScheme();
-    };
-
-    this.callMessage = function () {
-        return this.queue.shift();
-    };
-
-    global.WebViewMediatorInstance = this;
-}
+    },
+    shiftQueue: function () {
+        return queue.shift();
+    }
+};
 
 global.WebViewMediator = WebViewMediator;
 })(this, this.document);
