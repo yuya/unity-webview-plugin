@@ -81,8 +81,7 @@ public class WebViewPlugin {
 		}	
 	}
 	
-	public WebViewPlugin() {
-	}
+	public WebViewPlugin() {}
 	
 	@SuppressLint("SetJavaScriptEnabled")
 	public void Init(final String name, final String scheme) {
@@ -120,7 +119,6 @@ public class WebViewPlugin {
 
 				webSettings.setSupportZoom(false);
 				webSettings.setJavaScriptEnabled(true);
-//				webSettings.setPluginsEnabled(true);
 			}
 		});
 	}

@@ -50,17 +50,18 @@ char *MakeStringCopy (const char *string) {
     self = [super init];
     
     if (self) {
-        UIView *view      = UnityGetGLViewController().view;
-        _webView          = [[UIWebView alloc] initWithFrame:view.frame];
+        UIView *view = UnityGetGLViewController().view;
+        _webView     = [[[UIWebView alloc] initWithFrame:view.frame] autorelease];
 
         _webView.delegate = self;
         _webView.hidden   = YES;
+        _webView.opaque   = NO;
         _webView.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
         
         [view addSubview:_webView];
         
         self.gameObjectName = [NSString stringWithUTF8String:name];
-        self.customScheme   = [NSString stringWithUTF8String:scheme];
+        self.customScheme   = (scheme != NULL) ? [NSString stringWithUTF8String:scheme] : nil;
     }
     
     return self;
@@ -68,6 +69,7 @@ char *MakeStringCopy (const char *string) {
 
 - (void)dealloc {
     _webView.delegate = nil;
+    [_webView stopLoading];
     [_webView removeFromSuperview];
     
     _webView            = nil;
@@ -90,9 +92,9 @@ char *MakeStringCopy (const char *string) {
 }
 
 - (void)loadURL:(const char *)url {
-    NSString *urlStr  = [NSString stringWithUTF8String:url];
-    NSURL *nsurl      = [NSURL URLWithString:urlStr];
-    NSURLRequest *req = [NSURLRequest requestWithURL:nsurl];
+    NSString     *urlStr = [NSString stringWithUTF8String:url];
+    NSURL        *nsurl  = [NSURL URLWithString:urlStr];
+    NSURLRequest *req    = [NSURLRequest requestWithURL:nsurl];
     
     [_webView loadRequest:req];
 }
@@ -154,44 +156,37 @@ char *MakeStringCopy (const char *string) {
 #pragma mark - Unity Plugin
 
 extern "C" {
-    void *webViewPluginInit(const char *name, const char *scheme);
+    void *webViewPluginInit(const char *gameObjectName, const char *scheme);
     void webViewPluginDestroy(void *instance);
     void webViewPluginLoadURL(void *instance, const char *url);
-    void webViewEvaluteJS(void *instance, const char *str);
+    void webViewPluginEvaluteJS(void *instance, const char *str);
     void webViewPluginSetVisibility(void *instance, BOOL visibility);
     void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height);
     void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom);
 }
 
-//static WebViewPlugin *webViewInstance;
-
-void *webViewPluginInit(const char *name, const char *scheme) {
-    id instance = [[WebViewPlugin alloc] initWithGameObjectName:name customScheme:scheme];
-    
+void *webViewPluginInit(const char *gameObjectName, const char *scheme) {
+    id instance = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName customScheme:scheme];
     return (void *)instance;
 }
 
 void webViewPluginDestroy(void *instance) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-    
     [webViewPlugin release];
 }
 
 void webViewPluginLoadURL(void *instance, const char *url) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-    
     [webViewPlugin loadURL:url];
 }
 
-void webViewEvaluteJS(void *instance, const char *str) {
+void webViewPluginEvaluteJS(void *instance, const char *str) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-    
     [webViewPlugin evaluateJS:str];
 }
 
 void webViewPluginSetVisibility(void *instance, BOOL visibility) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-    
     [webViewPlugin setVisibility:visibility];
 }
 
@@ -210,7 +205,6 @@ void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger w
 
 void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-    
     [webViewPlugin setMargins:left top:top right:right bottom:bottom];
 }
 
