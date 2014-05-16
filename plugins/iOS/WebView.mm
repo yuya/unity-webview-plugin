@@ -92,9 +92,9 @@ char *MakeStringCopy (const char *string) {
 }
 
 - (void)loadURL:(const char *)url {
-    NSString *urlStr  = [NSString stringWithUTF8String:url];
-    NSURL *nsurl      = [NSURL URLWithString:urlStr];
-    NSURLRequest *req = [NSURLRequest requestWithURL:nsurl];
+    NSString     *urlStr = [NSString stringWithUTF8String:url];
+    NSURL        *nsurl  = [NSURL URLWithString:urlStr];
+    NSURLRequest *req    = [NSURLRequest requestWithURL:nsurl];
     
     [_webView loadRequest:req];
 }
