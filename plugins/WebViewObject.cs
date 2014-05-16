@@ -160,27 +160,7 @@ public class WebViewObject : MonoBehaviour {
     }
 
     void OnDestroy() {
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX
-        if (webView == IntPtr.Zero) {
-            return;
-        }
-
-        webViewPluginDestroy(webView);
-#elif UNITY_IPHONE
-        if (webView == IntPtr.Zero) {
-            return;
-        }
-
-        webViewPluginDestroy(webView);
-#elif UNITY_ANDROID
-        if (webView == null) {
-            return;
-        }
-
-        webView.Call("Destroy");
-#elif UNITY_WEBPLAYER
-        Application.ExternalCall("unityWebView.destroy", name);
-#endif
+        Destroy();
     }
 
     /** Use this function instead of SetMargins to easily set up a centered window */
@@ -296,6 +276,24 @@ public class WebViewObject : MonoBehaviour {
 
     public void HandleMessage(string message) {
         callerObject.SendMessage("ShiftQueue", (message != null) ? new WebViewObjectMessage(message) : null);
+    }
+
+    public void Destroy() {
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_IPHONE
+        if (webView == IntPtr.Zero) {
+            return;
+        }
+
+        webViewPluginDestroy(webView);
+#elif UNITY_ANDROID
+        if (webView == null) {
+            return;
+        }
+
+        webView.Call("Destroy");
+#elif UNITY_WEBPLAYER
+        Application.ExternalCall("unityWebView.destroy", name);
+#endif
     }
 
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
