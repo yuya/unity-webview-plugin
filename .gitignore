@@ -1,32 +1,16 @@
-Dist
-.metadata
+build/Packager/Assets/Plugins
+build/Packager/Library
 
-#Unity3D
-*.sln
-*.userprefs
-*.csproj
-*.pidb
-*.unityproj
-.DS_Store
-._*
-Thumbs.db
-Library/
-obj/
-Temp/
-Assets/-tk2d.asset*
+plugins/Android/.classpath
+plugins/Android/.project
+plugins/Android/bin
+plugins/Android/gen
+plugins/Android/libs
+plugins/Android/res
+plugins/Android/local.properties
+plugins/Android/proguard-project.txt
 
-# for editors
-.*.sw[p|o|n]
-*.sw[p|o|n]
-*.un~
-*\#*
-*~
-\#*\#
-*.bak
-*.o
-*.obj
-*.bk
-*.def
-
-*.local
+plugins/Mac/DerivedData
+plugins/Mac/WebView.xcodeproj/project.xcworkspace/xcuserdata/
+plugins/Mac/WebView.xcodeproj/xcuserdata/
 
