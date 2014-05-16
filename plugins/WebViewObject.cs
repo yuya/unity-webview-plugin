@@ -28,6 +28,25 @@ using System.Runtime.InteropServices;
 
 using Callback = System.Action<string>;
 
+public class WebViewObjectMessage {
+    public string    path;
+    public Hashtable args;
+
+    public WebViewObjectMessage(string message) {
+        string[] split = message.Split("?"[0]);
+
+        path = split[0];
+        args = new Hashtable();
+
+        if (split.Length > 1) {
+            foreach (string pair in split[1].Split("&"[0])) {
+                string[] keys = pair.Split("="[0]);
+                args[keys[0]] = WWW.UnEscapeURL(keys[1]);
+            }
+        }
+    }
+}
+
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
 public class UnitySendMessageDispatcher {
     public static void Dispatch(string name, string method, string message) {
@@ -123,7 +142,7 @@ public class WebViewObject : MonoBehaviour {
     }
 #endif
 
-    public void Init(Callback cb = null) {
+    public void Init(string name, string scheme, string caller, Callback cb = null) {
         callback = cb;
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
         CreateTexture(0, 0, Screen.width, Screen.height);
@@ -136,6 +155,8 @@ public class WebViewObject : MonoBehaviour {
 #elif UNITY_WEBPLAYER
         Application.ExternalCall("unityWebView.init", name, scheme);
 #endif
+
+        callerObject = GameObject.Find(caller);
     }
 
     void OnDestroy() {
@@ -271,6 +292,10 @@ public class WebViewObject : MonoBehaviour {
         if (callback != null) {
             callback(message);
         }
+    }
+
+    public void HandleMessage(string message) {
+        callerObject.SendMessage("ShiftQueue", (message != null) ? new WebViewObjectMessage(message) : null);
     }
 
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
