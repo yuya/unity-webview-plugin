@@ -41,12 +41,11 @@ char *MakeStringCopy (const char *string) {
 @interface WebViewPlugin : NSObject<UIWebViewDelegate>
 @property (nonatomic, retain) UIWebView *webView;
 @property (nonatomic, copy)   NSString  *gameObjectName;
-@property (nonatomic, copy)   NSString  *customScheme;
 @end
 
 @implementation WebViewPlugin
 
-- (id)initWithGameObjectName:(const char *)name customScheme:(const char *)scheme {
+- (id)initWithGameObjectName:(const char *)name {
     self = [super init];
     
     if (self) {
@@ -61,7 +60,6 @@ char *MakeStringCopy (const char *string) {
         [view addSubview:_webView];
         
         self.gameObjectName = [NSString stringWithUTF8String:name];
-        self.customScheme   = (scheme != NULL) ? [NSString stringWithUTF8String:scheme] : nil;
     }
     
     return self;
@@ -81,7 +79,7 @@ char *MakeStringCopy (const char *string) {
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     NSString *url = [[request URL] absoluteString];
     
-    if ([url hasPrefix:self.customScheme]) {
+    if ([url hasPrefix:@"webviewbridge:"]) {
         UnitySendMessage([self.gameObjectName UTF8String], "HandleMessage", [self shiftQueue]);
         
         return NO;
@@ -156,7 +154,7 @@ char *MakeStringCopy (const char *string) {
 #pragma mark - Unity Plugin
 
 extern "C" {
-    void *webViewPluginInit(const char *gameObjectName, const char *scheme);
+    void *webViewPluginInit(const char *gameObjectName);
     void webViewPluginDestroy(void *instance);
     void webViewPluginLoadURL(void *instance, const char *url);
     void webViewPluginEvaluteJS(void *instance, const char *str);
@@ -165,8 +163,8 @@ extern "C" {
     void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom);
 }
 
-void *webViewPluginInit(const char *gameObjectName, const char *scheme) {
-    id instance = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName customScheme:scheme];
+void *webViewPluginInit(const char *gameObjectName) {
+    id instance = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName];
     return (void *)instance;
 }
 

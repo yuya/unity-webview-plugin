@@ -93,7 +93,7 @@ public class WebViewObject : MonoBehaviour {
 
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
     [DllImport("WebView")]
-    private static extern IntPtr webViewPluginInit(string gameObject, string scheme, int width, int height, bool ineditor);
+    private static extern IntPtr webViewPluginInit(string gameObject, int width, int height, bool ineditor);
     [DllImport("WebView")]
     private static extern int webViewPluginDestroy(IntPtr instance);
     [DllImport("WebView")]
@@ -110,7 +110,7 @@ public class WebViewObject : MonoBehaviour {
                                                    bool keyPress, short keyCode, string keyChars, int textureId);
 #elif UNITY_IPHONE
     [DllImport("__Internal")]
-    private static extern IntPtr webViewPluginInit(string gameObject, string scheme);
+    private static extern IntPtr webViewPluginInit(string gameObject);
     [DllImport("__Internal")]
     private static extern int webViewPluginDestroy(IntPtr instance);
     [DllImport("__Internal")]
@@ -142,18 +142,19 @@ public class WebViewObject : MonoBehaviour {
     }
 #endif
 
-    public void Init(string name, string scheme, string caller, Callback cb = null) {
+    // public void Init(string name, string caller, Callback cb = null) {
+    public void Init(Callback cb = null) {
         callback = cb;
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
         CreateTexture(0, 0, Screen.width, Screen.height);
-        webView = webViewPluginInit(name, scheme, Screen.width, Screen.height, Application.platform == RuntimePlatform.OSXEditor);
+        webView = webViewPluginInit(name, Screen.width, Screen.height, Application.platform == RuntimePlatform.OSXEditor);
 #elif UNITY_IPHONE
-        webView = webViewPluginInit(name, scheme);
+        webView = webViewPluginInit(name);
 #elif UNITY_ANDROID
         webView = new AndroidJavaObject("im.yuya.unitywebviewplugin.WebViewPlugin");
         webView.Call("Init", name);
 #elif UNITY_WEBPLAYER
-        Application.ExternalCall("unityWebView.init", name, scheme);
+        Application.ExternalCall("unityWebView.init", name);
 #endif
 
         callerObject = GameObject.Find(caller);

@@ -97,7 +97,6 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 @interface WebViewPlugin : NSObject {
 	WebView *webView;
 	NSString *gameObjectName;
-	NSString *customScheme;
 	NSBitmapImageRep *bitmap;
 	int textureId;
 	BOOL needsDisplay;
@@ -107,7 +106,7 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 
 @implementation WebViewPlugin
 
-- (id)initWithGameObject:(const char *)name customScheme:(const char *) width:(int)width height:(int)height {
+- (id)initWithGameObject:(const char *)name width:(int)width height:(int)height {
 	self           = [super init];
 	monoMethod     = 0;
 	webView        = [[WebView alloc] initWithFrame:NSMakeRect(0, 0, width, height)];
@@ -132,7 +131,7 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 		request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener {
 	NSString *url = [[request URL] absoluteString];
     
-	if ([url hasPrefix:customScheme]) {
+	if ([url hasPrefix:@"webviewbridge:"]) {
 		UnitySendMessage([gameObjectName UTF8String], "HandleMessage", [self shiftQueue]);
 		[listener ignore];
 	}
@@ -300,13 +299,13 @@ void unityRenderEvent(int eventID);
 
 static NSMutableSet *pool;
 
-void *webViewPluginInit(const char *gameObject, const char *scheme, int width, int height, BOOL ineditor) {
+void *webViewPluginInit(const char *gameObject, int width, int height, BOOL ineditor) {
 	if (pool == 0) {
 		pool = [[NSMutableSet alloc] init];
     }
 
 	inEditor = ineditor;
-	id instance = [[WebViewPlugin alloc] initWithGameObject:gameObject customScheme:scheme width:width height:height];
+	id instance = [[WebViewPlugin alloc] initWithGameObject:gameObject width:width height:height];
 	[pool addObject:[NSValue valueWithPointer:instance]];
     
 	return (void *)instance;

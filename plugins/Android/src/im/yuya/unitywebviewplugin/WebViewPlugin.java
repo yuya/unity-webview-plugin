@@ -84,12 +84,12 @@ public class WebViewPlugin {
 	public WebViewPlugin() {}
 	
 	@SuppressLint("SetJavaScriptEnabled")
-	public void Init(final String name, final String scheme) {
+	public void Init(final String name) {
 		final Activity activity = UnityPlayer.currentActivity;
 
 		gameObjectName = name;
-		customScheme   = scheme;
-		customSchemeRe = Pattern.compile("^" + customScheme + ":\\/\\/");
+		customScheme   = "webviewbridge:";
+		customSchemeRe = Pattern.compile("^" + customScheme + "\\/\\/");
 		
 		activity.runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
