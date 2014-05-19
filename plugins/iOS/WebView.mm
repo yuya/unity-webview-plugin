@@ -52,9 +52,9 @@ char *MakeStringCopy (const char *string) {
         UIView *view = UnityGetGLViewController().view;
         _webView     = [[[UIWebView alloc] initWithFrame:view.frame] autorelease];
 
-        _webView.delegate = self;
-        _webView.hidden   = YES;
-        _webView.opaque   = NO;
+        _webView.delegate                    = self;
+        _webView.hidden                      = YES;
+        _webView.backgroundColor             = [UIColor clearColor];
         _webView.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
         
         [view addSubview:_webView];
@@ -120,10 +120,6 @@ char *MakeStringCopy (const char *string) {
     _webView.frame = frame;
 }
 
-- (NSString *)stringByEvaluatingJS:(NSString *)str {
-    return [_webView stringByEvaluatingJavaScriptFromString:str];
-}
-
 - (void)setMargins:(int)left top:(int)top right:(int)right bottom:(int)bottom {
     UIView* view  = UnityGetGLViewController().view;
     CGRect frame  = _webView.frame;
@@ -157,7 +153,7 @@ extern "C" {
     void *webViewPluginInit(const char *gameObjectName);
     void webViewPluginDestroy(void *instance);
     void webViewPluginLoadURL(void *instance, const char *url);
-    void webViewPluginEvaluteJS(void *instance, const char *str);
+    void webViewPluginEvaluateJS(void *instance, const char *str);
     void webViewPluginSetVisibility(void *instance, BOOL visibility);
     void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height);
     void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom);
@@ -178,7 +174,7 @@ void webViewPluginLoadURL(void *instance, const char *url) {
     [webViewPlugin loadURL:url];
 }
 
-void webViewPluginEvaluteJS(void *instance, const char *str) {
+void webViewPluginEvaluateJS(void *instance, const char *str) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin evaluateJS:str];
 }

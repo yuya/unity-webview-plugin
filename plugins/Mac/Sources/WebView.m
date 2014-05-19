@@ -95,13 +95,12 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 #pragma mark - Objective-C Implementation
 
 @interface WebViewPlugin : NSObject {
-	WebView *webView;
-	NSString *gameObjectName;
-	NSBitmapImageRep *bitmap;
-	int textureId;
-	BOOL needsDisplay;
+    WebView          *webView;
+    NSString         *gameObject;
+    NSBitmapImageRep *bitmap;
+    int              textureId;
+    BOOL             needsDisplay;
 }
-
 @end
 
 @implementation WebViewPlugin
@@ -115,14 +114,14 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 	[webView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
 	[webView setPolicyDelegate:self];
     
-	gameObjectName = [[NSString stringWithUTF8String:name] retain];
+	gameObject = [[NSString stringWithUTF8String:name] retain];
 
 	return self;
 }
 
 - (void)dealloc {
 	[webView release];
-	[gameObjectName release];
+	[gameObject release];
 	[bitmap release];
 	[super dealloc];
 }
@@ -132,20 +131,12 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 	NSString *url = [[request URL] absoluteString];
     
 	if ([url hasPrefix:@"webviewbridge:"]) {
-		UnitySendMessage([gameObjectName UTF8String], "HandleMessage", [self shiftQueue]);
+		UnitySendMessage([gameObject UTF8String], "HandleMessage", [self shiftQueue]);
 		[listener ignore];
 	}
     else {
 		[listener use];
 	}
-}
-
-- (void)loadURL:(const char *)url {
-	NSString     *urlStr  = [NSString stringWithUTF8String:url];
-	NSURL        *nsurl   = [NSURL URLWithString:urlStr];
-	NSURLRequest *request = [NSURLRequest requestWithURL:nsurl];
-    
-	[[webView mainFrame] loadRequest:request];
 }
 
 - (void)setRect:(int)width height:(int)height {
@@ -159,6 +150,14 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 
 - (void)setVisibility:(BOOL)visibility {
 	webView.hidden = visibility ? NO : YES;
+}
+
+- (void)loadURL:(const char *)url {
+    NSString     *urlStr  = [NSString stringWithUTF8String:url];
+    NSURL        *nsurl   = [NSURL URLWithString:urlStr];
+    NSURLRequest *request = [NSURLRequest requestWithURL:nsurl];
+    
+    [[webView mainFrame] loadRequest:request];
 }
 
 - (void)evaluateJS:(const char *)js {

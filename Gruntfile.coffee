@@ -7,6 +7,7 @@ module.exports = (grunt) ->
     mm     : basepath.mm
     jar    : basepath.jar
     bundle : basepath.bundle
+    xcode  : basepath.xcode
   config =
     pkg: grunt.file.readJSON "package.json"
 
@@ -18,6 +19,7 @@ module.exports = (grunt) ->
     esteWatch:
       options:
         dirs: [
+          "build/Packager/Assets/Plugins/**/"
           "plugins/**/"
         ]
         livereload:
@@ -27,7 +29,12 @@ module.exports = (grunt) ->
         return ["exec:cp:#{file}:#{filepath.cs}"]
 
       mm: (file) ->
-        return ["exec:cp:#{file}:#{filepath.mm}"]
+        task = [
+          "exec:cp:#{file}:#{filepath.mm}"
+          "exec:cp:#{file}:#{filepath.xcode.mm}"
+        ]
+
+        return task
 
       jar: (file) ->
         return ["exec:cp:#{file}:#{filepath.jar}"]
@@ -39,7 +46,6 @@ module.exports = (grunt) ->
   matchdep.filterDev("grunt-*").forEach grunt.loadNpmTasks
 
   grunt.registerTask "default", ["esteWatch"]
-
   grunt.registerTask "watch", "watching \.(cs|mm|jar|bundle) files.", ->
     console.log "environment : %s", opts.env
     console.log "livereload  : %s", opts.livereload
