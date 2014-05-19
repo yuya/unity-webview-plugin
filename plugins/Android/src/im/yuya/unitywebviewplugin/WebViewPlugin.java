@@ -88,8 +88,8 @@ public class WebViewPlugin {
 		final Activity activity = UnityPlayer.currentActivity;
 
 		gameObjectName = name;
-		customScheme   = "webviewbridge:";
-		customSchemeRe = Pattern.compile("^" + customScheme + "\\/\\/");
+		customScheme   = "webviewbridge";
+		customSchemeRe = Pattern.compile("^" + customScheme + ":\\/\\/");
 		
 		activity.runOnUiThread(new Runnable() {
 			@SuppressWarnings("deprecation")
