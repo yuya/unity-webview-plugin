@@ -1,0 +1,25 @@
+{
+  "name": "unity-webview-plugin",
+  "version": "1.0.0",
+  "description": "unity webview plugin",
+  "main": "webview.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yuya/unity-webview-plugin.git"
+  },
+  "author": "Yuya Hashimoto",
+  "license": "zlib",
+  "bugs": {
+    "url": "https://github.com/yuya/unity-webview-plugin/issues"
+  },
+  "homepage": "https://github.com/yuya/unity-webview-plugin",
+  "devDependencies": {
+    "matchdep": "^0.3.0",
+    "grunt": "^0.4.5",
+    "grunt-exec": "^0.4.5",
+    "grunt-este-watch": "^0.1.16"
+  }
+}
