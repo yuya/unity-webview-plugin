@@ -57,6 +57,8 @@ char *MakeStringCopy (const char *string) {
         _webView.backgroundColor             = [UIColor clearColor];
         _webView.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
         
+        // キャッシュをしない
+        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
         [view addSubview:_webView];
         
         self.gameObjectName = [NSString stringWithUTF8String:name];
@@ -135,13 +137,10 @@ char *MakeStringCopy (const char *string) {
 }
 
 - (char *)shiftQueue {
-    const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
-    
-    if (message) {
-        return MakeStringCopy(message);
-    }
-    else {
-        return NULL;
+    if (_webView != nil) {
+        const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
+        
+        return message ? MakeStringCopy(message) : NULL;
     }
 }
 
