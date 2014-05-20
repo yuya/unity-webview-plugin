@@ -142,8 +142,9 @@ public class WebViewObject : MonoBehaviour {
     }
 #endif
 
-    // public void Init(string name, string caller, Callback cb = null) {
-    public void Init(Callback cb = null) {
+    private GameObject callerObject;
+
+    public void Init(string callerObjectName, Callback cb = null) {
         callback = cb;
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
         CreateTexture(0, 0, Screen.width, Screen.height);
@@ -157,7 +158,7 @@ public class WebViewObject : MonoBehaviour {
         Application.ExternalCall("unityWebView.init", name);
 #endif
 
-        callerObject = GameObject.Find(caller);
+        callerObject = GameObject.Find(callerObjectName);
     }
 
     void OnDestroy() {
@@ -276,7 +277,7 @@ public class WebViewObject : MonoBehaviour {
     }
 
     public void HandleMessage(string message) {
-        callerObject.SendMessage("ShiftQueue", (message != null) ? new WebViewObjectMessage(message) : null);
+        callerObject.SendMessage("CallMessage", (message != null) ? new WebViewObjectMessage(message) : null);
     }
 
     public void Destroy() {

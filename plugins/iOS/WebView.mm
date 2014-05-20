@@ -108,7 +108,7 @@ char *MakeStringCopy (const char *string) {
 }
 
 - (void)setFrame:(NSInteger)x positionY:(NSInteger)y width:(NSInteger)width height:(NSInteger)height {
-    UIView* view  = UnityGetGLViewController().view;
+    UIView *view  = UnityGetGLViewController().view;
     CGRect frame  = _webView.frame;
     CGRect screen = view.bounds;
     
@@ -121,10 +121,10 @@ char *MakeStringCopy (const char *string) {
 }
 
 - (void)setMargins:(int)left top:(int)top right:(int)right bottom:(int)bottom {
-    UIView* view  = UnityGetGLViewController().view;
-    CGRect frame  = _webView.frame;
-    CGRect screen = view.bounds;
-    CGFloat scale = 1.0f / view.contentScaleFactor;
+    UIView *view   = UnityGetGLViewController().view;
+    CGRect  frame  = _webView.frame;
+    CGRect  screen = view.bounds;
+    CGFloat scale  = 1.0f / view.contentScaleFactor;
     
     frame.size.width  = screen.size.width  - scale * (left + right);
     frame.size.height = screen.size.height - scale * (top + bottom);
@@ -186,7 +186,7 @@ void webViewPluginSetVisibility(void *instance, BOOL visibility) {
 
 void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
-    float screenScale            = [UIScreen instancesRespondToSelector:@selector(scale)] ? [UIScreen mainScreen].scale : 1.0f;
+    float         screenScale    = [UIScreen instancesRespondToSelector:@selector(scale)] ? [UIScreen mainScreen].scale : 1.0f;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (screenScale == 2.0) {
