@@ -190,6 +190,8 @@ public class WebViewPlugin {
 	public void shiftQueue() {
 		String message = "javascript:alert(WebViewMediator.shiftQueue())";
 		
-		webView.loadUrl(message);
+		if (webView != null) {
+			webView.loadUrl(message);
+		}
 	}
 }
