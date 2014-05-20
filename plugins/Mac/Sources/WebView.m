@@ -293,7 +293,7 @@ void webViewPluginEvaluateJS(void *instance, const char *url);
 void webViewPluginUpdate(void *instance, int x, int y, float deltaY,
                          BOOL buttonDown, BOOL buttonPress, BOOL buttonRelease, BOOL keyPress,
                          unsigned char keyCode, const char *keyChars, int textureId);
-void unityRenderEvent(int eventID);
+void UnityRenderEvent(int eventID);
 }
 
 static NSMutableSet *pool;
@@ -345,7 +345,7 @@ void webViewPluginUpdate(void *instance, int x, int y, float deltaY,
 				   keyCode:keyCode keyChars:keyChars textureId:textureId];
 }
 
-void unityRenderEvent(int eventID) {
+void UnityRenderEvent(int eventID) {
 	@autoreleasepool {
 		if ([pool containsObject:[NSValue valueWithPointer:(void *)eventID]]) {
 			WebViewPlugin *webViewPlugin = (WebViewPlugin *)eventID;
