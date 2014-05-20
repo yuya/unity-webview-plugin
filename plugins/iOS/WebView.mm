@@ -150,41 +150,41 @@ char *MakeStringCopy (const char *string) {
 #pragma mark - Unity Plugin
 
 extern "C" {
-    void *webViewPluginInit(const char *gameObjectName);
-    void webViewPluginDestroy(void *instance);
-    void webViewPluginLoadURL(void *instance, const char *url);
-    void webViewPluginEvaluateJS(void *instance, const char *str);
-    void webViewPluginSetVisibility(void *instance, BOOL visibility);
-    void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height);
-    void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom);
+    void *_WebViewPlugin_Init(const char *gameObjectName);
+    void _WebViewPlugin_Destroy(void *instance);
+    void _WebViewPlugin_LoadURL(void *instance, const char *url);
+    void _WebViewPlugin_EvaluateJS(void *instance, const char *str);
+    void _WebViewPlugin_SetVisibility(void *instance, BOOL visibility);
+    void _WebViewPlugin_SetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height);
+    void _WebViewPlugin_SetMargins(void *instance, int left, int top, int right, int bottom);
 }
 
-void *webViewPluginInit(const char *gameObjectName) {
+void *_WebViewPlugin_Init(const char *gameObjectName) {
     id instance = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName];
     return (void *)instance;
 }
 
-void webViewPluginDestroy(void *instance) {
+void _WebViewPlugin_Destroy(void *instance) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin release];
 }
 
-void webViewPluginLoadURL(void *instance, const char *url) {
+void _WebViewPlugin_LoadURL(void *instance, const char *url) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin loadURL:url];
 }
 
-void webViewPluginEvaluateJS(void *instance, const char *str) {
+void _WebViewPlugin_EvaluateJS(void *instance, const char *str) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin evaluateJS:str];
 }
 
-void webViewPluginSetVisibility(void *instance, BOOL visibility) {
+void _WebViewPlugin_SetVisibility(void *instance, BOOL visibility) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin setVisibility:visibility];
 }
 
-void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height) {
+void _WebViewPlugin_SetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     float         screenScale    = [UIScreen instancesRespondToSelector:@selector(scale)] ? [UIScreen mainScreen].scale : 1.0f;
     
@@ -197,7 +197,7 @@ void webViewPluginSetFrame(void *instance, NSInteger x, NSInteger y, NSInteger w
     [webViewPlugin setFrame:x/screenScale positionY:y/screenScale width:width/screenScale height:height/screenScale];
 }
 
-void webViewPluginSetMargins(void *instance, int left, int top, int right, int bottom) {
+void _WebViewPlugin_SetMargins(void *instance, int left, int top, int right, int bottom) {
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin setMargins:left top:top right:right bottom:bottom];
 }

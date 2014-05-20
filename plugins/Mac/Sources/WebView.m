@@ -284,13 +284,13 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 #pragma mark - Unity Plugin
 
 extern "C" {
-void *webViewPluginInit(const char *gameObject, int width, int height, BOOL inEditor);
-void webViewPluginDestroy(void *instance);
-void webViewPluginSetRect(void *instance, int width, int height);
-void webViewPluginSetVisibility(void *instance, BOOL visibility);
-void webViewPluginLoadURL(void *instance, const char *url);
-void webViewPluginEvaluateJS(void *instance, const char *url);
-void webViewPluginUpdate(void *instance, int x, int y, float deltaY,
+void *_WebViewPlugin_Init(const char *gameObject, int width, int height, BOOL inEditor);
+void _WebViewPlugin_Destroy(void *instance);
+void _WebViewPlugin_SetRect(void *instance, int width, int height);
+void _WebViewPlugin_SetVisibility(void *instance, BOOL visibility);
+void _WebViewPlugin_LoadURL(void *instance, const char *url);
+void _WebViewPlugin_EvaluateJS(void *instance, const char *url);
+void _WebViewPlugin_Update(void *instance, int x, int y, float deltaY,
                          BOOL buttonDown, BOOL buttonPress, BOOL buttonRelease, BOOL keyPress,
                          unsigned char keyCode, const char *keyChars, int textureId);
 void UnityRenderEvent(int eventID);
@@ -298,7 +298,7 @@ void UnityRenderEvent(int eventID);
 
 static NSMutableSet *pool;
 
-void *webViewPluginInit(const char *gameObject, int width, int height, BOOL ineditor) {
+void *_WebViewPlugin_Init(const char *gameObject, int width, int height, BOOL ineditor) {
 	if (pool == 0) {
 		pool = [[NSMutableSet alloc] init];
     }
@@ -310,35 +310,35 @@ void *webViewPluginInit(const char *gameObject, int width, int height, BOOL ined
 	return (void *)instance;
 }
 
-void webViewPluginDestroy(void *instance) {
+void _WebViewPlugin_Destroy(void *instance) {
 	WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
 	[webViewPlugin release];
 	[pool removeObject:[NSValue valueWithPointer:instance]];
 }
 
-void webViewPluginSetRect(void *instance, int width, int height) {
+void _WebViewPlugin_SetRect(void *instance, int width, int height) {
 	WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
 	[webViewPlugin setRect:width height:height];
 }
 
-void webViewPluginSetVisibility(void *instance, BOOL visibility) {
+void _WebViewPlugin_SetVisibility(void *instance, BOOL visibility) {
 	WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
 	[webViewPlugin setVisibility:visibility];
 }
 
-void webViewPluginLoadURL(void *instance, const char *url) {
+void _WebViewPlugin_LoadURL(void *instance, const char *url) {
 	WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
 	[webViewPlugin loadURL:url];
 }
 
-void webViewPluginEvaluateJS(void *instance, const char *js) {
+void _WebViewPlugin_EvaluateJS(void *instance, const char *js) {
 	WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
 	[webViewPlugin evaluateJS:js];
 }
 
-void webViewPluginUpdate(void *instance, int x, int y, float deltaY,
-                         BOOL buttonDown, BOOL buttonPress, BOOL buttonRelease, BOOL keyPress,
-                         unsigned char keyCode, const char *keyChars, int textureId) {
+void _WebViewPlugin_Update(void *instance, int x, int y, float deltaY,
+                           BOOL buttonDown, BOOL buttonPress, BOOL buttonRelease, BOOL keyPress,
+                           unsigned char keyCode, const char *keyChars, int textureId) {
 	WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
 	[webViewPlugin update:x y:y deltaY:deltaY buttonDown:buttonDown
 				   buttonPress:buttonPress buttonRelease:buttonRelease keyPress:keyPress
