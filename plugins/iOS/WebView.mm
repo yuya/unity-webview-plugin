@@ -141,6 +141,15 @@ static char *MakeStringCopy(const char *string) {
     return message ? MakeStringCopy(message) : NULL;
 }
 
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    UnitySendMessage([_gameObjectName UTF8String], "DetectNetworkStatus", "pass");
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    // NSInteger errCode = [error code]; 
+    UnitySendMessage([_gameObjectName UTF8String], "DetectNetworkStatus", "fail");
+}
+
 @end
 
 #pragma mark - Unity Plugin

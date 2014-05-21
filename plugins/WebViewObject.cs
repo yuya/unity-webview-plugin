@@ -294,6 +294,15 @@ public class WebViewObject : MonoBehaviour {
         callerObject.SendMessage("CallMessage", (message != null) ? new WebViewObjectMessage(message) : null);
     }
 
+    public void DetectNetworkStatus(string message) {
+        if (message == "pass") {
+            Debug.Log("DetectNetworkStatus : pass");
+        }
+        else {
+            Debug.Log("DetectNetworkStatus : fail");
+        }
+    }
+
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
     void Update() {
         inputString += Input.inputString;

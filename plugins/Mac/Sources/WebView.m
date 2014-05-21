@@ -141,6 +141,15 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
     }
 }
 
+// - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+//     UnitySendMessage([gameObject UTF8String], "DetectNetworkStatus", "pass");
+// }
+
+// - (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error forFrame:(WebFrame *)frame {
+//     // NSInteger errCode = [error code];
+//     UnitySendMessage([gameObject UTF8String], "DetectNetworkStatus", "fail");
+// }
+
 - (void)setRect:(int)width height:(int)height {
     NSRect frame;
     frame.size.width  = width;
