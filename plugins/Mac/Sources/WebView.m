@@ -53,7 +53,7 @@ static MonoImage      *monoImage;
 static MonoMethodDesc *monoDesc;
 static MonoMethod     *monoMethod;
 
-char *MakeStringCopy (const char *string) {
+static char *MakeStringCopy(const char *string) {
     if (string == NULL) {
         return NULL;
     }
@@ -111,6 +111,8 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
     webView        = [[WebView alloc] initWithFrame:NSMakeRect(0, 0, width, height)];
     webView.hidden = YES;
     
+    // キャッシュをしない
+    [[NSURLCache sharedURLCache] setMemoryCapacity:0];
     [webView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
     [webView setPolicyDelegate:self];
     
@@ -169,12 +171,7 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 - (char *)shiftQueue {
     const char *message = [webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
     
-    if (message) {
-        return MakeStringCopy(message);
-    }
-    else {
-        return NULL;
-    }
+    return message ? MakeStringCopy(message) : NULL;
 }
 
 - (void)update:(int)x y:(int)y deltaY:(float)deltaY

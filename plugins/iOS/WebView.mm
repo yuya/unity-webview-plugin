@@ -25,7 +25,7 @@
 extern UIViewController *UnityGetGLViewController();
 extern "C" void UnitySendMessage(const char *, const char *, const char *);
 
-char *MakeStringCopy (const char *string) {
+static char *MakeStringCopy(const char *string) {
     if (string == NULL) {
         return NULL;
     }
@@ -40,7 +40,7 @@ char *MakeStringCopy (const char *string) {
 
 @interface WebViewPlugin : NSObject<UIWebViewDelegate>
 @property (nonatomic, retain) UIWebView *webView;
-@property (nonatomic, copy)   NSString  *gameObjectName;
+@property (nonatomic, retain) NSString  *gameObjectName;
 @end
 
 @implementation WebViewPlugin
@@ -49,8 +49,9 @@ char *MakeStringCopy (const char *string) {
     self = [super init];
     
     if (self) {
-        UIView *view = UnityGetGLViewController().view;
-        _webView     = [[[UIWebView alloc] initWithFrame:view.frame] autorelease];
+        UIView *view    = UnityGetGLViewController().view;
+        _webView        = [[UIWebView alloc] initWithFrame:view.frame];
+        _gameObjectName = [[NSString stringWithUTF8String:name] retain];
 
         _webView.delegate                    = self;
         _webView.hidden                      = YES;
@@ -59,9 +60,7 @@ char *MakeStringCopy (const char *string) {
         
         // キャッシュをしない
         [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-        [view addSubview:_webView];
-        
-        self.gameObjectName = [NSString stringWithUTF8String:name];
+        [view addSubview:_webView];        
     }
     
     return self;
@@ -69,12 +68,12 @@ char *MakeStringCopy (const char *string) {
 
 - (void)dealloc {
     _webView.delegate = nil;
+
     [_webView stopLoading];
     [_webView removeFromSuperview];
-    
-    _webView            = nil;
-    self.gameObjectName = nil;
-    
+    [_webView release];
+    [_gameObjectName release];
+
     [super dealloc];
 }
 
@@ -82,7 +81,7 @@ char *MakeStringCopy (const char *string) {
     NSString *url = [[request URL] absoluteString];
     
     if ([url hasPrefix:@"webviewbridge:"]) {
-        UnitySendMessage([self.gameObjectName UTF8String], "HandleMessage", [self shiftQueue]);
+        UnitySendMessage([_gameObjectName UTF8String], "HandleMessage", [self shiftQueue]);
         
         return NO;
     }
@@ -106,7 +105,7 @@ char *MakeStringCopy (const char *string) {
 }
 
 - (void)setVisibility:(BOOL)visibility {
-    _webView.hidden = visibility ? NO : YES;
+    _webView.hidden = !visibility;
 }
 
 - (void)setFrame:(NSInteger)x positionY:(NSInteger)y width:(NSInteger)width height:(NSInteger)height {
@@ -137,11 +136,9 @@ char *MakeStringCopy (const char *string) {
 }
 
 - (char *)shiftQueue {
-    if (_webView != nil) {
-        const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
-        
-        return message ? MakeStringCopy(message) : NULL;
-    }
+    const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
+    
+    return message ? MakeStringCopy(message) : NULL;
 }
 
 @end
