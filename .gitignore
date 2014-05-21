@@ -1,3 +1,5 @@
+filepath.json
+
 build/Packager/Assets/Plugins
 build/Packager/Library
 
@@ -14,5 +16,10 @@ plugins/Mac/DerivedData
 plugins/Mac/WebView.xcodeproj/project.xcworkspace/xcuserdata/
 plugins/Mac/WebView.xcodeproj/xcuserdata/
 
-filepath.json
+sample/Assets/Plugins
+sample/Assets/Plugins.meta
+sample/!Assets/Plugins/Android/AndroidManifest.xml
+sample/!Assets/Plugins/Android/AndroidManifest.xml.meta
+sample/Library
+sample/Temp
 
