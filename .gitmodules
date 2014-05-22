@@ -1,0 +1,4 @@
+[submodule "webview.js"]
+	path = webview.js
+	url = git@github.com:yuya/unity-webview-plugin.git
+	branch = gh-pages
