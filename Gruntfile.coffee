@@ -6,6 +6,7 @@ module.exports = (grunt) ->
     cs     : basepath.cs
     mm     : basepath.mm
     jar    : basepath.jar
+    xml    : basepath.xml
     bundle : basepath.bundle
     xcode  : basepath.xcode
   config =
@@ -38,6 +39,9 @@ module.exports = (grunt) ->
 
       jar: (file) ->
         return ["exec:cp:#{file}:#{filepath.jar}"]
+
+      xml: (file) ->
+        return ["exec:cp:#{file}:#{filepath.xml}"]
 
       bundle: (file) ->
         return ["exec:cp:#{file}:#{filepath.bundle}"]
