@@ -105,9 +105,9 @@ public class WebViewObject : MonoBehaviour {
     [DllImport("WebView")]
     private static extern void _WebViewPlugin_EvaluateJS(IntPtr instance, string url);
     [DllImport("WebView")]
-    private static extern void _WebViewPlugin_Update(IntPtr instance,
-                                                   int x, int y, float deltaY, bool down, bool press, bool release,
-                                                   bool keyPress, short keyCode, string keyChars, int textureId);
+    private static extern void _WebViewPlugin_Update(IntPtr instance, int x, int y, float deltaY,
+                                                     bool down, bool press, bool release, bool keyPress,
+                                                     short keyCode, string keyChars, int textureId);
 #elif UNITY_IPHONE
     [DllImport("__Internal")]
     private static extern IntPtr _WebViewPlugin_Init(string gameObject);
@@ -223,31 +223,6 @@ public class WebViewObject : MonoBehaviour {
 #endif
     }
 
-    public void SetVisibility(bool v) {
-#if UNITY_EDITOR || UNITY_STANDALONE_OSX
-        if (webView == IntPtr.Zero) {
-            return;
-        }
-
-        visibility = v;
-        _WebViewPlugin_SetVisibility(webView, v);
-#elif UNITY_IPHONE
-        if (webView == IntPtr.Zero) {
-            return;
-        }
-
-        _WebViewPlugin_SetVisibility(webView, v);
-#elif UNITY_ANDROID
-        if (webView == null) {
-            return;
-        }
-
-        webView.Call("SetVisibility", v);
-#elif UNITY_WEBPLAYER
-        Application.ExternalCall("unityWebView.setVisibility", name, v);
-#endif
-    }
-
     public void LoadURL(string url) {
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_IPHONE
         if (webView == IntPtr.Zero) {
@@ -264,6 +239,39 @@ public class WebViewObject : MonoBehaviour {
 #elif UNITY_WEBPLAYER
         Application.ExternalCall("unityWebView.loadURL", name, url);
 #endif
+    }
+
+    private void SetVisibility(bool value) {
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX
+        if (webView == IntPtr.Zero) {
+            return;
+        }
+
+        visibility = value;
+        _WebViewPlugin_SetVisibility(webView, value);
+#elif UNITY_IPHONE
+        if (webView == IntPtr.Zero) {
+            return;
+        }
+
+        _WebViewPlugin_SetVisibility(webView, value);
+#elif UNITY_ANDROID
+        if (webView == null) {
+            return;
+        }
+
+        webView.Call("SetVisibility", value);
+#elif UNITY_WEBPLAYER
+        Application.ExternalCall("unityWebView.setVisibility", name, value);
+#endif
+    }
+
+    public void Show() {
+        SetVisibility(true);
+    }
+
+    public void Hide() {
+        SetVisibility(false);
     }
 
     public void EvaluateJS(string js) {
