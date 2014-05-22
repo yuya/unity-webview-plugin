@@ -21,24 +21,33 @@
  */
 
 using UnityEngine;
+using System.Collections;
 
 public class SampleWebView : MonoBehaviour {
     public string Url;
     WebViewObject webViewObject;
 
     void Awake() {
-        webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
     }
 
-    void Start() {
+    void Start() {        
+        webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
         webViewObject.Init(name, (msg)=> {
             Debug.Log("### Initialized!!");
         });
-
-        webViewObject.SetVisibility(true);
-        webViewObject.LoadURL(Url);
     }
 
+    void OnGUI() {
+        if (GUILayout.Button("OPEN URL", GUILayout.MinWidth(200), GUILayout.MinHeight(100))) {
+            webViewObject.LoadURL(Url);
+            webViewObject.Show();
+        }
+    }
+
+    void OnDestroy() {
+        Destroy(webViewObject);
+        Destroy(this);
+    }
 
     private void DOMContentLoaded() {
         Debug.Log("DOMContentLoaded");
@@ -48,11 +57,11 @@ public class SampleWebView : MonoBehaviour {
         Debug.Log("WindowOnLoad");
     }
 
-    private void CloseWebView() {
-        Debug.Log("CloseWebView");
+    private void DeactivateWebView() {
+        Debug.Log("DeactivateWebView");
 
-        webViewObject.SetVisibility(false);
-        Destroy(webViewObject);
+        webViewObject.LoadURL("about:blank");
+        webViewObject.Hide();
     }
 
     public void CallMessage(WebViewObjectMessage message) {
@@ -64,7 +73,7 @@ public class SampleWebView : MonoBehaviour {
             WindowOnLoad();
             break;
         case "close":
-            CloseWebView();
+            DeactivateWebView();
             break; 
         };
     }
