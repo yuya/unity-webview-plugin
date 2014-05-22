@@ -61,7 +61,9 @@ public class WebViewPlugin {
         }
 
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-            UnityPlayer.UnitySendMessage(gameObjectName, "DetectNetworkStatus", "fail");
+            if (!Uri.parse(failingUrl).getScheme().toString().equals(customScheme)) {
+                UnityPlayer.UnitySendMessage(gameObjectName, "DetectNetworkStatus", "fail");
+            }
         }
     }
     
