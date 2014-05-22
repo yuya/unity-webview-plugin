@@ -2,7 +2,7 @@ filepath.json
 
 build/Packager/Assets/Plugins
 build/Packager/Library
-build/Xcode
+build/Bin
 
 plugins/Android/.classpath
 plugins/Android/.project

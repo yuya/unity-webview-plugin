@@ -1,0 +1,9 @@
+{
+  "cs"     : "~/PATH/TO/UNITY_PROJECT_DIRECTORY/Assets/Plugins",
+  "mm"     : "~/PATH/TO/UNITY_PROJECT_DIRECTORY/Assets/Plugins/iOS",
+  "jar"    : "~/PATH/TO/UNITY_PROJECT_DIRECTORY/Assets/Plugins/Android",
+  "bundle" : "~/PATH/TO/UNITY_PROJECT_DIRECTORY/Assets/Plugins",
+  "xcode"  : {
+    "mm" : "~/PATH/TO/XCODE_PROJECT_DIRECTORY/iOS/Libraries" 
+  }
+}
