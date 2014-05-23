@@ -271,8 +271,19 @@ public class WebViewObject : MonoBehaviour {
     }
 
     public void Hide() {
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX
+        StartCoroutine(DelayHide(0.1f));
+#else
+        SetVisibility(false);
+#endif
+    }
+
+#if UNITY_EDITOR || UNITY_STANDALONE_OSX
+    private IEnumerator DelayHide(float delay) {
+        yield return new WaitForSeconds((delay != null) ? delay : 0.5f);
         SetVisibility(false);
     }
+#endif
 
     public void EvaluateJS(string js) {
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_IPHONE
