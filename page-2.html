@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Unity WebView Plugin</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+}
+body {
+    line-height: 1.4;
+    font-size: 14px;
+    font-family: sans-serif;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+}
+.btn {
+    display: block;
+    width: 280px;
+    height: 44px;
+    margin: 0 auto 10px;
+    border-radius: 3px;
+    background: #000;
+    color: #fff;
+    line-height: 44px;
+    text-align: center;
+    text-decoration: none;
+}
+</style>
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="-1">
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no">
+</head>
+<body>
+<div id="container">
+    <a class="btn js-load-url" href="index.html">goto index</a>
+    
+    <div class="btn js-bridge" data-path="/show_indicator">show_indicator</div>
+    <div class="btn js-bridge" data-path="/hide_indicator">hide_indicator</div>
+    <div class="btn js-bridge" data-path="/spawn">Spawn a box</div>
+    <div class="btn js-bridge" data-path="/spawn" data-args='{ "color" : "red"  }'>Spawn a red box</div>
+    <div class="btn js-bridge" data-path="/spawn" data-args='{ "color" : "blue" }'>Spawn a blue box</div>
+    <div class="btn js-bridge" data-path="/spawn" data-args='{ "color" : "red",  "scale" : 0.5 }'>Spawn a small red box</div>
+    <div class="btn js-bridge" data-path="/spawn" data-args='{ "color" : "blue", "scale" : 0.5 }'>Spawn a small blue box</div>
+    <div class="btn js-bridge" data-path="/close"> close </div>
+</div>
+<script src="http://yuya.github.io/tappie/tappie.min.js"></script>
+<script src="webview.js"></script>
+<script>
+(function (global, document) {
+    var webview = global.WebViewMediator;
+
+    function addListener() {
+        var elements = document.getElementsByClassName("js-bridge"),
+            el, target, path, args;
+
+        for (var i = 0, l = elements.length; i < l; ++i) {
+            el = elements[i];
+
+            el.addEventListener("tap", function (event) {
+                target = event.currentTarget;
+                path   = target.getAttribute("data-path");
+                args   = target.getAttribute("data-args");
+
+                webview.call(path, args ? JSON.parse(args) : null);
+            }, false);
+        }
+    }
+
+    function handleLoadUrl() {
+        var elements = document.getElementsByClassName("js-load-url"),
+            el, href;
+
+        for (var i = 0, l = elements.length; i < l; ++i) {
+            el = elements[i];
+
+            el.addEventListener("tap", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                target = event.currentTarget;
+                href   = target.getAttribute("href");
+
+                if (!href) {
+                    return;
+                }
+
+                webview.call("/show_indicator");
+                location.assign(href);
+            }, false);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        webview.call("/hide_indicator");
+
+        addListener();
+        handleLoadUrl();
+    }, false);
+})(this, this.document);
+</script>
+</body>
+</html>
