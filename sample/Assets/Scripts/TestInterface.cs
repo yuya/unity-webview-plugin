@@ -62,10 +62,6 @@ public class TestInterface : MonoBehaviour {
         webViewObject.LoadURL(url);
     }
 
-    private void WindowOnLoad() {
-        Debug.Log("WindowOnLoad");
-    }
-
     private void Spawn(Hashtable args) {
         GameObject prefab;
         GameObject box;
@@ -84,31 +80,34 @@ public class TestInterface : MonoBehaviour {
         }
     }
 
-    private void Note() {
-
+    private void WindowOnLoad() {
+        Debug.Log("WindowOnLoad");
     }
 
-    private void Print() {
+    private void onError() {
 
     }
 
     public void CallMessage(WebViewObjectMessage message) {
         switch (message.path) {
-        case "/domcontentloaded":
+        case "/spawn":
+            Spawn(message.args);
+            break;
+        case "/close":
+            HideWebView();
+            break; 
+        case "/show_indicator":
+            ShowIndicator();
+            break;
         case "/hide_indicator":
+        case "/domcontentloaded":
             HideIndicator();
             break;
         case "/load":
             WindowOnLoad();
             break;
-        case "/close":
-            HideWebView();
-            break; 
-        case "/spawn":
-            Spawn(message.args);
-            break;
-        case "/show_indicator":
-            ShowIndicator();
+        case "/on_error":
+            onError();
             break;
         };
     }

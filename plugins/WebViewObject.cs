@@ -315,16 +315,10 @@ public class WebViewObject : MonoBehaviour {
 
     public void DetectNetworkStatus(string message) {
         if (message == "pass") {
-            string showIndicatorMessage = "/show_indicator";
-
-            Debug.Log("DetectNetworkStatus : pass");
-            callerObject.SendMessage("CallMessage", new WebViewObjectMessage(showIndicatorMessage));
+            callerObject.SendMessage("CallMessage", new WebViewObjectMessage("/hide_indicator"));
         }
         else {
-            string hideIndicatorMessage = "/hide_indicator";
-            
-            Debug.Log("DetectNetworkStatus : fail");
-            callerObject.SendMessage("CallMessage", new WebViewObjectMessage(hideIndicatorMessage));
+            callerObject.SendMessage("CallMessage", new WebViewObjectMessage("/on_error"));
         }
     }
 
