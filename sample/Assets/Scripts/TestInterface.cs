@@ -19,23 +19,47 @@ public class TestInterface : MonoBehaviour {
 
     void OnGUI() {
         if (GUILayout.Button("TAP HERE", GUILayout.MinWidth(200), GUILayout.MinHeight(100))) {
-            ActivateWebView();
+            ShowWebView();
         }
     }
 
-    private void ActivateWebView() {
+    private void ShowWebView() {
         webViewObject.LoadURL(Url);
         webViewObject.SetMargins(12, Screen.height / 2 + 12, 12, 12);
         webViewObject.Show();
     }
 
-    private void DeactivateWebView() {
+    private void HideWebView() {
         webViewObject.LoadURL("about:blank");
         webViewObject.Hide();
     }
 
-    private void DOMContentLoaded() {
-        Debug.Log("DOMContentLoaded");
+    private IEnumerator StartActivityIndicator() {
+#if UNITY_IPHONE
+        Handheld.SetActivityIndicatorStyle(iOSActivityIndicatorStyle.Gray);
+#elif UNITY_ANDROID
+        Handheld.SetActivityIndicatorStyle(AndroidActivityIndicatorStyle.Small);
+#endif
+        Handheld.StartActivityIndicator();
+        
+        yield return new WaitForSeconds(0);
+    }
+
+    private void ShowIndicator() {
+        StartCoroutine(StartActivityIndicator());
+    }
+
+    private void HideIndicator() {
+        Handheld.StopActivityIndicator();
+    }
+
+    public void LoadURLWithIndicator(string url) {
+        if (string.IsNullOrEmpty(url)) {
+            return;
+        }
+
+        StartCoroutine(StartActivityIndicator());
+        webViewObject.LoadURL(url);
     }
 
     private void WindowOnLoad() {
@@ -71,16 +95,20 @@ public class TestInterface : MonoBehaviour {
     public void CallMessage(WebViewObjectMessage message) {
         switch (message.path) {
         case "/domcontentloaded":
-            DOMContentLoaded();
+        case "/hide_indicator":
+            HideIndicator();
             break;
         case "/load":
             WindowOnLoad();
             break;
         case "/close":
-            DeactivateWebView();
+            HideWebView();
             break; 
         case "/spawn":
             Spawn(message.args);
+            break;
+        case "/show_indicator":
+            ShowIndicator();
             break;
         };
     }
