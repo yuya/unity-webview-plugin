@@ -136,7 +136,7 @@ static char *MakeStringCopy(const char *string) {
 }
 
 - (char *)shiftQueue {
-    const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
+    const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.ShiftQueue()"].UTF8String;
     
     return message ? MakeStringCopy(message) : NULL;
 }

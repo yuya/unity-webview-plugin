@@ -178,7 +178,7 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 }
 
 - (char *)shiftQueue {
-    const char *message = [webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.shiftQueue()"].UTF8String;
+    const char *message = [webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.ShiftQueue()"].UTF8String;
     
     return message ? MakeStringCopy(message) : NULL;
 }

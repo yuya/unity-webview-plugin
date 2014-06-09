@@ -36,7 +36,7 @@ public class TestInterface : MonoBehaviour {
 
     private IEnumerator StartActivityIndicator() {
 #if UNITY_IPHONE
-        Handheld.SetActivityIndicatorStyle(iOSActivityIndicatorStyle.Gray);
+        Handheld.SetActivityIndicatorStyle(iOSActivityIndicatorStyle.White);
 #elif UNITY_ANDROID
         Handheld.SetActivityIndicatorStyle(AndroidActivityIndicatorStyle.Small);
 #endif
@@ -85,7 +85,7 @@ public class TestInterface : MonoBehaviour {
     }
 
     private void onError() {
-
+        Debug.Log("OnErorr");
     }
 
     public void CallMessage(WebViewObjectMessage message) {
@@ -100,7 +100,6 @@ public class TestInterface : MonoBehaviour {
             ShowIndicator();
             break;
         case "/hide_indicator":
-        case "/domcontentloaded":
             HideIndicator();
             break;
         case "/load":

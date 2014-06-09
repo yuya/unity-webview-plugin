@@ -50,7 +50,7 @@ public class WebViewPlugin {
         @Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 		    if (Uri.parse(url).getScheme().toString().equals(customScheme)) {
-		        shiftQueue();
+		        ShiftQueue();
 		    }
 
 			return false;
@@ -198,8 +198,8 @@ public class WebViewPlugin {
         });
     }
     
-    public void shiftQueue() {
-        String message = "javascript:alert(WebViewMediator.shiftQueue())";
+    private void ShiftQueue() {
+        String message = "javascript:alert(WebViewMediator.ShiftQueue())";
         
         if (webView != null) {
             webView.loadUrl(message);
