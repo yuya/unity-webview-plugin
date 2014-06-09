@@ -51,7 +51,7 @@ body {
 <script src="webview.js"></script>
 <script>
 (function (global, document) {
-    var webview = global.WebViewMediator;
+    var Webview = global.WebViewMediator;
 
     function addListener() {
         var elements = document.getElementsByClassName("js-bridge"),
@@ -65,7 +65,7 @@ body {
                 path   = target.getAttribute("data-path");
                 args   = target.getAttribute("data-args");
 
-                webview.call(path, args ? JSON.parse(args) : null);
+                Webview.Call(path, args ? JSON.parse(args) : null);
             }, false);
         }
     }
@@ -88,14 +88,14 @@ body {
                     return;
                 }
 
-                webview.call("/show_indicator");
+                Webview.Call("/show_indicator");
                 location.assign(href);
             }, false);
         }
     }
 
     document.addEventListener("DOMContentLoaded", function () {
-        webview.call("/hide_indicator");
+        Webview.Call("/hide_indicator");
 
         addListener();
         handleLoadUrl();
