@@ -12,9 +12,7 @@ public class TestInterface : MonoBehaviour {
 
     void Start() {        
         webViewObject = (new GameObject("WebViewObject")).AddComponent<WebViewObject>();
-        webViewObject.Init(name, (msg)=> {
-            Debug.Log("### Initialized!!");
-        });
+        webViewObject.Init(name, "CustomUserAgent/1.0.0");
     }
 
     void OnGUI() {

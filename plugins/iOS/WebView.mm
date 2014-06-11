@@ -45,11 +45,21 @@ static char *MakeStringCopy(const char *string) {
 
 @implementation WebViewPlugin
 
-- (id)initWithGameObjectName:(const char *)name {
+- (id)initWithGameObjectName:(const char *)name customUserAgent:(const char *)userAgent {
     self = [super init];
+
+    if (userAgent != NULL) {
+        UIWebView    *tmpWebView   = [[UIWebView alloc] initWithFrame:CGRectZero];
+        NSString     *defaultUAStr = [tmpWebView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+        NSString     *addUAStr     = [@" " stringByAppendingString:[NSString stringWithUTF8String:userAgent]];
+        NSString     *customUAStr  = [defaultUAStr stringByAppendingString:addUAStr];
+        NSDictionary *userAgentDic = [[NSDictionary alloc] initWithObjectsAndKeys:customUAStr , @"UserAgent", nil];
+
+        [[NSUserDefaults standardUserDefaults] registerDefaults:userAgentDic];
+    }
     
     if (self) {
-        UIView *view    = UnityGetGLViewController().view;
+        UIView    *view = UnityGetGLViewController().view;
         _webView        = [[UIWebView alloc] initWithFrame:view.frame];
         _gameObjectName = [[NSString stringWithUTF8String:name] retain];
 
@@ -137,6 +147,9 @@ static char *MakeStringCopy(const char *string) {
 
 - (char *)shiftQueue {
     const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.ShiftQueue()"].UTF8String;
+
+    NSString *afterUserAgent = [_webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+    NSLog(afterUserAgent);
     
     return message ? MakeStringCopy(message) : NULL;
 }
@@ -155,7 +168,7 @@ static char *MakeStringCopy(const char *string) {
 #pragma mark - Unity Plugin
 
 extern "C" {
-    void *_WebViewPlugin_Init(const char *gameObjectName);
+    void *_WebViewPlugin_Init(const char *gameObjectName, const char *userAgent);
     void _WebViewPlugin_Destroy(void *instance);
     void _WebViewPlugin_LoadURL(void *instance, const char *url);
     void _WebViewPlugin_EvaluateJS(void *instance, const char *str);
@@ -164,8 +177,9 @@ extern "C" {
     void _WebViewPlugin_SetMargins(void *instance, int left, int top, int right, int bottom);
 }
 
-void *_WebViewPlugin_Init(const char *gameObjectName) {
-    id instance = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName];
+void *_WebViewPlugin_Init(const char *gameObjectName, const char *userAgent) {
+    id instance = [[WebViewPlugin alloc] initWithGameObjectName:gameObjectName customUserAgent:userAgent];
+
     return (void *)instance;
 }
 

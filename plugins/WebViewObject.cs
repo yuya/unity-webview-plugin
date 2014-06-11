@@ -26,7 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using Callback = System.Action<string>;
+// using Callback = System.Action<string>;
 
 public class WebViewObjectMessage {
     public string    path;
@@ -60,7 +60,7 @@ public class UnitySendMessageDispatcher {
 #endif
 
 public class WebViewObject : MonoBehaviour {
-    Callback callback;
+    // Callback callback;
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
     IntPtr    webView;
     bool      visibility;
@@ -93,7 +93,7 @@ public class WebViewObject : MonoBehaviour {
 
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
     [DllImport("WebView")]
-    private static extern IntPtr _WebViewPlugin_Init(string gameObject, int width, int height, bool ineditor);
+    private static extern IntPtr _WebViewPlugin_Init(string gameObject, int width, int height, bool ineditor, string userAgent);
     [DllImport("WebView")]
     private static extern int _WebViewPlugin_Destroy(IntPtr instance);
     [DllImport("WebView")]
@@ -110,7 +110,7 @@ public class WebViewObject : MonoBehaviour {
                                                      short keyCode, string keyChars, int textureId);
 #elif UNITY_IPHONE
     [DllImport("__Internal")]
-    private static extern IntPtr _WebViewPlugin_Init(string gameObject);
+    private static extern IntPtr _WebViewPlugin_Init(string gameObject, string userAgent);
     [DllImport("__Internal")]
     private static extern int _WebViewPlugin_Destroy(IntPtr instance);
     [DllImport("__Internal")]
@@ -144,8 +144,9 @@ public class WebViewObject : MonoBehaviour {
 
     private GameObject callerObject;
 
-    public void Init(string callerObjectName, Callback cb = null) {
-        callback = cb;
+    // public void Init(string callerObjectName, Callback cb = null) {
+    public void Init(string callerObjectName, string userAgent = null) {
+        // callback = cb;
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
         CreateTexture(0, 0, Screen.width, Screen.height);
         webView = _WebViewPlugin_Init(name, Screen.width, Screen.height, Application.platform == RuntimePlatform.OSXEditor);
@@ -304,9 +305,9 @@ public class WebViewObject : MonoBehaviour {
     }
 
     public void CallFromJS(string message) {
-        if (callback != null) {
-            callback(message);
-        }
+        // if (callback != null) {
+        //     callback(message);
+        // }
     }
 
     public void HandleMessage(string message) {
