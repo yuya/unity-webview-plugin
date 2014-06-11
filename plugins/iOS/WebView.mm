@@ -59,7 +59,7 @@ static char *MakeStringCopy(const char *string) {
     }
     
     if (self) {
-        UIView    *view = UnityGetGLViewController().view;
+        UIView *view    = UnityGetGLViewController().view;
         _webView        = [[UIWebView alloc] initWithFrame:view.frame];
         _gameObjectName = [[NSString stringWithUTF8String:name] retain];
 
@@ -148,9 +148,6 @@ static char *MakeStringCopy(const char *string) {
 - (char *)shiftQueue {
     const char *message = [_webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.ShiftQueue()"].UTF8String;
 
-    NSString *afterUserAgent = [_webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
-    NSLog(afterUserAgent);
-    
     return message ? MakeStringCopy(message) : NULL;
 }
 

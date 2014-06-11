@@ -91,7 +91,7 @@ public class WebViewPlugin {
     public WebViewPlugin() {}
     
     @SuppressLint("SetJavaScriptEnabled")
-    public void Init(final String name) {
+    public void Init(final String name, final String userAgent) {
         final Activity activity = UnityPlayer.currentActivity;
 
         gameObjectName = name;
@@ -103,6 +103,13 @@ public class WebViewPlugin {
             public void run() {
                 webView = new WebView(activity);
                 WebSettings webSettings = webView.getSettings();
+
+                if (userAgent != null) {
+                    String defaultUAStr = webSettings.getUserAgentString();
+                    String customUAStr  = defaultUAStr + " " + userAgent;
+
+                    webSettings.setUserAgentString(customUAStr);
+                }
 
                 webView.setVisibility(View.GONE);
                 webView.setFocusable(true);

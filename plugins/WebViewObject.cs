@@ -149,14 +149,14 @@ public class WebViewObject : MonoBehaviour {
         // callback = cb;
 #if UNITY_EDITOR || UNITY_STANDALONE_OSX
         CreateTexture(0, 0, Screen.width, Screen.height);
-        webView = _WebViewPlugin_Init(name, Screen.width, Screen.height, Application.platform == RuntimePlatform.OSXEditor);
+        webView = _WebViewPlugin_Init(name, Screen.width, Screen.height, Application.platform == RuntimePlatform.OSXEditor, userAgent);
 #elif UNITY_IPHONE
-        webView = _WebViewPlugin_Init(name);
+        webView = _WebViewPlugin_Init(name, userAgent);
 #elif UNITY_ANDROID
         webView = new AndroidJavaObject("im.yuya.unitywebviewplugin.WebViewPlugin");
-        webView.Call("Init", name);
+        webView.Call("Init", name, userAgent);
 #elif UNITY_WEBPLAYER
-        Application.ExternalCall("unityWebView.init", name);
+        Application.ExternalCall("unityWebView.init", name, userAgent);
 #endif
 
         callerObject = GameObject.Find(callerObjectName);
