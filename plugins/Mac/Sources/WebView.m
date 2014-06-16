@@ -105,11 +105,15 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 
 @implementation WebViewPlugin
 
-- (id)initWithGameObject:(const char *)name width:(int)width height:(int)height {
+- (id)initWithGameObject:(const char *)name width:(int)width height:(int)height customUserAgent:(const char *)userAgent {
     self           = [super init];
     monoMethod     = 0;
     webView        = [[WebView alloc] initWithFrame:NSMakeRect(0, 0, width, height)];
     webView.hidden = YES;
+
+    if (userAgent != NULL) {
+        [webView setApplicationNameForUserAgent:[NSString stringWithUTF8String:userAgent]];
+    }
     
     // キャッシュをしない
     [[NSURLCache sharedURLCache] setMemoryCapacity:0];
@@ -290,7 +294,7 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 #pragma mark - Unity Plugin
 
 extern "C" {
-void *_WebViewPlugin_Init(const char *gameObject, int width, int height, BOOL inEditor);
+void *_WebViewPlugin_Init(const char *gameObjectName, int width, int height, BOOL inEditor, const char *userAgent);
 void _WebViewPlugin_Destroy(void *instance);
 void _WebViewPlugin_SetRect(void *instance, int width, int height);
 void _WebViewPlugin_SetVisibility(void *instance, BOOL visibility);
@@ -304,13 +308,13 @@ void UnityRenderEvent(int eventID);
 
 static NSMutableSet *pool;
 
-void *_WebViewPlugin_Init(const char *gameObject, int width, int height, BOOL ineditor) {
+void *_WebViewPlugin_Init(const char *gameObjectName, int width, int height, BOOL ineditor, const char *userAgent) {
     if (pool == 0) {
         pool = [[NSMutableSet alloc] init];
     }
 
     inEditor = ineditor;
-    id instance = [[WebViewPlugin alloc] initWithGameObject:gameObject width:width height:height];
+    id instance = [[WebViewPlugin alloc] initWithGameObject:gameObjectName width:width height:height customUserAgent:userAgent];
     [pool addObject:[NSValue valueWithPointer:instance]];
     
     return (void *)instance;
