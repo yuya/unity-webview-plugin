@@ -1,4 +1,4 @@
-// JS library for Unity webview plugin 1.0.3 Copyright (C) 2014 Yuya Hashimoto, zlib License.
+// JS library for Unity webview plugin 1.0.4 Copyright (C) 2014 Yuya Hashimoto, zlib License.
 // See https://github.com/yuya/unity-webview-plugin
 ;(function (global, document) {
 var URL_SCHEME = "webviewbridge://",
@@ -61,11 +61,8 @@ WebViewMediator = {
         queue.push(message);
         callCustomURLScheme();
     },
-    HasQueue: function () {
-        return queue.length ? 1 : 0;
-    },
     ShiftQueue: function () {
-        return queue.shift();
+        return queue.length ? queue.shift() : "";
     }
 };
 
