@@ -23,11 +23,14 @@
 package im.yuya.unitywebviewplugin;
 
 import com.unity3d.player.UnityPlayer;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -206,8 +209,8 @@ public class WebViewPlugin {
     }
     
     private void ShiftQueue() {
-        String message = "javascript:alert(WebViewMediator.ShiftQueue())";
-        
+        String message = "javascript: WebViewMediator ? alert(WebViewMediator.ShiftQueue()) : void(0)";
+
         if (webView != null) {
             webView.loadUrl(message);
         }
