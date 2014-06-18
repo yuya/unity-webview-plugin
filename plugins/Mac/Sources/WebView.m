@@ -182,7 +182,7 @@ static void UnitySendMessage(const char *gameObject, const char *method, const c
 }
 
 - (char *)shiftQueue {
-    const char *message = [webView stringByEvaluatingJavaScriptFromString:@"WebViewMediator.ShiftQueue()"].UTF8String;
+    const char *message = [webView stringByEvaluatingJavaScriptFromString:@"(typeof WebViewMediator !== 'undefined') ? WebViewMediator.ShiftQueue() : void(0)"].UTF8String;
     
     return message ? MakeStringCopy(message) : NULL;
 }

@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.net.Uri;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -75,8 +74,10 @@ public class WebViewPlugin {
         public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
             Matcher matcher = customSchemeRe.matcher(message);
 
-            if (matcher.lookingAt()) {
-                UnityPlayer.UnitySendMessage(gameObjectName, "HandleMessage", matcher.replaceFirst(""));
+            if (matcher.lookingAt() || message.equals("undefined")) {
+                if (matcher.lookingAt()) {
+                    UnityPlayer.UnitySendMessage(gameObjectName, "HandleMessage", matcher.replaceFirst(""));
+                }
                 
                 try {
                     return true;
@@ -209,7 +210,7 @@ public class WebViewPlugin {
     }
     
     private void ShiftQueue() {
-        String message = "javascript: WebViewMediator ? alert(WebViewMediator.ShiftQueue()) : void(0)";
+        String message = "javascript: (typeof WebViewMediator !== 'undefined') ? alert(WebViewMediator.ShiftQueue()) : void(0)";
 
         if (webView != null) {
             webView.loadUrl(message);
