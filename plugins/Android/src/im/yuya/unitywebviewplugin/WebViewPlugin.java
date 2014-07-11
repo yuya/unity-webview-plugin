@@ -72,6 +72,10 @@ public class WebViewPlugin {
     private class WebChromeClientAlertHook extends WebChromeClient {
         @Override
         public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+            if (customSchemeRe == null) {
+                return false;
+            }
+
             Matcher matcher = customSchemeRe.matcher(message);
 
             if (matcher.lookingAt() || message.equals("undefined")) {
@@ -129,15 +133,16 @@ public class WebViewPlugin {
                     layout = new FrameLayout(activity);
                     
                     activity.addContentView(layout, new LayoutParams(
-                            LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+                            LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT)
+                    );
                     layout.setFocusable(true);
                     layout.setFocusableInTouchMode(true);
                 }
                 
                 layout.addView(webView, new FrameLayout.LayoutParams(
                         LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT,
-                        Gravity.NO_GRAVITY))
-                ;
+                        Gravity.NO_GRAVITY)
+                );
             }
         });
     }
@@ -163,7 +168,9 @@ public class WebViewPlugin {
         
         activity.runOnUiThread(new Runnable() {
             public void run() {
-                webView.loadUrl(url);
+                if (webView != null) {
+                    webView.loadUrl(url);
+                }
             }
         });
     }
@@ -173,7 +180,9 @@ public class WebViewPlugin {
         
         activity.runOnUiThread(new Runnable() {
             public void run() {
-                webView.loadUrl("javascript:" + str);
+                if (webView != null) {
+                    webView.loadUrl("javascript:" + str);
+                }
             }
         });
     }
@@ -183,13 +192,15 @@ public class WebViewPlugin {
         
         activity.runOnUiThread(new Runnable() {
             public void run() {
-                if (visibility) {
-                    webView.setVisibility(View.VISIBLE);
-                    layout.requestFocus();
-                    webView.requestFocus();
-                }
-                else {
-                    webView.setVisibility(View.GONE);
+                if (webView != null) {
+                    if (visibility) {
+                        webView.setVisibility(View.VISIBLE);
+                        layout.requestFocus();
+                        webView.requestFocus();
+                    }
+                    else {
+                        webView.setVisibility(View.GONE);
+                    }
                 }
             }
         });
@@ -204,7 +215,9 @@ public class WebViewPlugin {
         params.setMargins(left, top, right, bottom);
         activity.runOnUiThread(new Runnable() {
             public void run() {
-                webView.setLayoutParams(params);
+                if (webView != null) {
+                    webView.setLayoutParams(params);
+                }
             }
         });
     }
