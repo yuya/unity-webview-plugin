@@ -49,13 +49,18 @@ static char *MakeStringCopy(const char *string) {
     self = [super init];
 
     if (userAgent != NULL) {
-        UIWebView    *tmpWebView   = [[UIWebView alloc] initWithFrame:CGRectZero];
-        NSString     *defaultUAStr = [tmpWebView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
-        NSString     *addUAStr     = [@" " stringByAppendingString:[NSString stringWithUTF8String:userAgent]];
-        NSString     *customUAStr  = [defaultUAStr stringByAppendingString:addUAStr];
-        NSDictionary *userAgentDic = [[NSDictionary alloc] initWithObjectsAndKeys:customUAStr , @"UserAgent", nil];
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        NSString       *userkeyName  = @"UserAgent";
 
-        [[NSUserDefaults standardUserDefaults] registerDefaults:userAgentDic];
+        if ([userDefaults objectForKey:userkeyName] == nil) {
+            UIWebView      *tmpWebView   = [[UIWebView alloc] initWithFrame:CGRectZero];
+            NSString       *defaultUAStr = [tmpWebView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
+            NSString       *addUAStr     = [@" " stringByAppendingString:[NSString stringWithUTF8String:userAgent]];
+            NSString       *customUAStr  = [defaultUAStr stringByAppendingString:addUAStr];
+            NSDictionary   *userAgentDic = [[NSDictionary alloc] initWithObjectsAndKeys:customUAStr , userkeyName, nil];
+
+            [userDefaults registerDefaults:userAgentDic];
+        }
     }
     
     if (self) {
