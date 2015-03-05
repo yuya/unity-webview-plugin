@@ -186,29 +186,49 @@ void *_WebViewPlugin_Init(const char *gameObjectName, const char *userAgent) {
 }
 
 void _WebViewPlugin_Destroy(void *instance) {
+    if (!instance) {
+        return;
+    }
+
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin release];
 }
 
 void _WebViewPlugin_LoadURL(void *instance, const char *url) {
+    if (!instance) {
+        return;
+    }
+
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin loadURL:url];
 }
 
 void _WebViewPlugin_EvaluateJS(void *instance, const char *str) {
+    if (!instance) {
+        return;
+    }
+
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin evaluateJS:str];
 }
 
 void _WebViewPlugin_SetVisibility(void *instance, BOOL visibility) {
+    if (!instance) {
+        return;
+    }
+    
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin setVisibility:visibility];
 }
 
 void _WebViewPlugin_SetFrame(void *instance, NSInteger x, NSInteger y, NSInteger width, NSInteger height) {
+    if (!instance) {
+        return;
+    }
+
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     float         screenScale    = [UIScreen instancesRespondToSelector:@selector(scale)] ? [UIScreen mainScreen].scale : 1.0f;
-    
+
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
         if (screenScale == 2.0) {
             screenScale = 1.0f;
@@ -219,7 +239,10 @@ void _WebViewPlugin_SetFrame(void *instance, NSInteger x, NSInteger y, NSInteger
 }
 
 void _WebViewPlugin_SetMargins(void *instance, int left, int top, int right, int bottom) {
+    if (!instance) {
+        return;
+    }
+
     WebViewPlugin *webViewPlugin = (WebViewPlugin *)instance;
     [webViewPlugin setMargins:left top:top right:right bottom:bottom];
 }
-
