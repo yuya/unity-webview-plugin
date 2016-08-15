@@ -27,6 +27,7 @@ import com.unity3d.player.UnityPlayer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.net.Uri;
@@ -128,6 +129,10 @@ public class WebViewPlugin {
 
                 webSettings.setSupportZoom(false);
                 webSettings.setJavaScriptEnabled(true);
+                webSettings.setDatabaseEnabled(true);
+                webSettings.setDomStorageEnabled(true);
+                String databasePath = webView.getContext().getDir("databases", Context.MODE_PRIVATE).getPath();
+                webSettings.setDatabasePath(databasePath);
                 
                 if (layout == null) {
                     layout = new FrameLayout(activity);
