@@ -27,6 +27,7 @@ import com.unity3d.player.UnityPlayer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.content.Context;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.net.Uri;
@@ -47,19 +48,18 @@ public class WebViewPlugin {
     private Pattern customSchemeRe;
 
     private static FrameLayout layout = null;
-    
+
     private class WebViewClientNetworkHook extends WebViewClient {
         @Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-		    if (Uri.parse(url).getScheme().toString().equals(customScheme)) {
-		        ShiftQueue();
-		    }
-
-			return false;
-		}
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (Uri.parse(url).getScheme().toString().equals(customScheme)) {
+                ShiftQueue();
+            }
+            return false;
+        }
 
         public void onPageFinished(WebView view, String url) {
-	        UnityPlayer.UnitySendMessage(gameObjectName, "DetectNetworkStatus", "pass");
+            UnityPlayer.UnitySendMessage(gameObjectName, "DetectNetworkStatus", "pass");
         }
 
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
@@ -68,7 +68,7 @@ public class WebViewPlugin {
             }
         }
     }
-    
+
     private class WebChromeClientAlertHook extends WebChromeClient {
         @Override
         public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
@@ -82,7 +82,7 @@ public class WebViewPlugin {
                 if (matcher.lookingAt()) {
                     UnityPlayer.UnitySendMessage(gameObjectName, "HandleMessage", matcher.replaceFirst(""));
                 }
-                
+
                 try {
                     return true;
                 }
@@ -93,11 +93,11 @@ public class WebViewPlugin {
             else {
                 return false;
             }
-        }    
+        }
     }
-    
+
     public WebViewPlugin() {}
-    
+
     @SuppressLint("SetJavaScriptEnabled")
     public void Init(final String name, final String userAgent) {
         final Activity activity = UnityPlayer.currentActivity;
@@ -105,7 +105,7 @@ public class WebViewPlugin {
         gameObjectName = name;
         customScheme   = "webviewbridge";
         customSchemeRe = Pattern.compile("^" + customScheme + ":\\/\\/");
-        
+
         activity.runOnUiThread(new Runnable() {
             @SuppressWarnings("deprecation")
             public void run() {
@@ -128,28 +128,32 @@ public class WebViewPlugin {
 
                 webSettings.setSupportZoom(false);
                 webSettings.setJavaScriptEnabled(true);
-                
+                webSettings.setDatabaseEnabled(true);
+                webSettings.setDomStorageEnabled(true);
+                String databasePath = webView.getContext().getDir("databases", Context.MODE_PRIVATE).getPath();
+                webSettings.setDatabasePath(databasePath);
+
                 if (layout == null) {
                     layout = new FrameLayout(activity);
-                    
+
                     activity.addContentView(layout, new LayoutParams(
-                            LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT)
+                                    LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT)
                     );
                     layout.setFocusable(true);
                     layout.setFocusableInTouchMode(true);
                 }
-                
+
                 layout.addView(webView, new FrameLayout.LayoutParams(
-                        LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT,
-                        Gravity.NO_GRAVITY)
+                                LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT,
+                                Gravity.NO_GRAVITY)
                 );
             }
         });
     }
-    
+
     public void Destroy() {
         Activity activity = UnityPlayer.currentActivity;
-        
+
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (webView != null) {
@@ -162,10 +166,10 @@ public class WebViewPlugin {
             }
         });
     }
-    
+
     public void LoadURL(final String url) {
         final Activity activity = UnityPlayer.currentActivity;
-        
+
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (webView != null) {
@@ -174,10 +178,10 @@ public class WebViewPlugin {
             }
         });
     }
-    
+
     public void EvaluteJs(final String str) {
         final Activity activity = UnityPlayer.currentActivity;
-        
+
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (webView != null) {
@@ -186,10 +190,10 @@ public class WebViewPlugin {
             }
         });
     }
-    
+
     public void SetVisibility(final boolean visibility) {
         Activity activity = UnityPlayer.currentActivity;
-        
+
         activity.runOnUiThread(new Runnable() {
             public void run() {
                 if (webView != null) {
@@ -205,13 +209,13 @@ public class WebViewPlugin {
             }
         });
     }
-    
+
     public void SetMargins(int left, int top, int right, int bottom) {
         @SuppressWarnings("deprecation")
         final FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, Gravity.NO_GRAVITY);
         Activity activity = UnityPlayer.currentActivity;
-        
+
         params.setMargins(left, top, right, bottom);
         activity.runOnUiThread(new Runnable() {
             public void run() {
@@ -221,7 +225,31 @@ public class WebViewPlugin {
             }
         });
     }
-    
+
+    public void BackPage () {
+        final Activity activity = UnityPlayer.currentActivity;
+
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                if (webView != null && webView.canGoBack()) {
+                    webView.goBack();
+                }
+            }
+        });
+    }
+
+    public void ForwordPage () {
+        final Activity activity = UnityPlayer.currentActivity;
+
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                if (webView != null && webView.canGoForward()) {
+                    webView.goForward();
+                }
+            }
+        });
+    }
+
     private void ShiftQueue() {
         String message = "javascript: (typeof WebViewMediator !== 'undefined') ? alert(WebViewMediator.ShiftQueue()) : void(0)";
 
